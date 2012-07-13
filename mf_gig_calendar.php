@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9
+Version: 0.9.1
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -335,11 +335,11 @@ function mfgigcal_about_page() {
 	<p><a href="http://www.matthewfries.com" target="_blank">www.matthewfries.com</a>&nbsp;&nbsp;&nbsp;<-- lots of jazz music to hear here...</p>
 	<p>
 	
-	<a href="http://www.matthewfries.com/music/tri-fi-3/"><img src="<?=$siteurl?>/wp-content/plugins/mf_gig_calendar/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/"><img src="<?=$siteurl?>/wp-content/plugins/mf_gig_calendar/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/postcards/"><img src="<?=$siteurl?>/wp-content/plugins/mf_gig_calendar/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/tri-fi/"><img src="<?=$siteurl?>/wp-content/plugins/mf_gig_calendar/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/"><img src="<?=$siteurl?>/wp-content/plugins/mf_gig_calendar/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a>
+	<a href="http://www.matthewfries.com/music/tri-fi-3/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a>
+	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a>
+	<a href="http://www.matthewfries.com/music/postcards/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a>
+	<a href="http://www.matthewfries.com/music/tri-fi/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a>
+	<a href="http://www.matthewfries.com/music/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a>
 </p>
 
 	<p>Please let me know what you think (of the plugin and the music!) - and if you have any suggestions or find any problems. While I do my best and this plugin is working great for me 
