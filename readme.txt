@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=matth
 Tags: calendar, event, gig, musician, Matthew Fries, brewermfnyc
 Requires at least: 3.3
 Tested up to: 3.4.1
-Stable tag: 0.9.1
+Stable tag: 0.9.2
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
 License: GPLv2 or later
@@ -85,6 +85,10 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+**Version 0.9.2**
+
+* Fixed the installer!! When I added the options page in version 0.9 it caused a problem with setting up the plugin for the first time. There was a PHP timeout you may have been experiencing. This should be fixed now! Sorry...
+
 **Version 0.9.1**
 
 * Fixed a typo and a couple broken links in the documentation.
@@ -117,4 +121,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.1 fixes a couple typos and broken links.
+Version 0.9.2 fixes the installer!! I'm so sorry - I can't believe I didn't catch the error.

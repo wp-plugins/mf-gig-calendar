@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.1
+Version: 0.9.2
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -695,7 +695,7 @@ function mfgigcal_CalendarNav() {
 			LIMIT 1";
 	$first_year = $wpdb->get_results($sql, ARRAY_A);
 	
-	(is_array($first_year)) ? $first_year = mfgigcal_ExtractDate($first_year[0][start_date],'Y') : $first_year = date("Y");
+	(!empty($first_year)) ? $first_year = mfgigcal_ExtractDate($first_year[0][start_date],'Y') : $first_year = date("Y");
 	
 	$sql = "SELECT DISTINCT *
 			FROM $mfgigcal_table 
@@ -705,7 +705,7 @@ function mfgigcal_CalendarNav() {
 			LIMIT 1";
 	$last_year = $wpdb->get_results($sql, ARRAY_A);
 	
-	(is_array($last_year)) ? $last_year = mfgigcal_ExtractDate($last_year[0][end_date],'Y') : $last_year = date("Y");
+	(!empty($last_year)) ? $last_year = mfgigcal_ExtractDate($last_year[0][end_date],'Y') : $last_year = date("Y");
 	
 	if ( is_admin() ) {
 		$query_prefix = "?page=mf_gig_calendar&";
