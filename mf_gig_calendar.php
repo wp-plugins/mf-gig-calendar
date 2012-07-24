@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.2
+Version: 0.9.3
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -77,6 +77,17 @@ function mfgigcal_getrows() {
 		$mfgigcal_data .= "<a href=\"$feed_link\" class=\"rss-link\">RSS</a>"; 
 	}
 	
+	if (get_option('permalink_structure')) {
+		$query_prefix = "?";
+	}
+	else {
+		$existing = "?";
+		foreach ($_GET as  $k => $v) {
+			if ($k != "ytd" && $k != "event_id") $existing .= $k . "=" . $v . "&";
+		}
+		$query_prefix = $existing;
+	}
+	
 	$mfgigcal_data .= mfgigcal_CalendarNav();
 	
 	if (empty($mfgigcal_events) && $mfgigcal_settings['no-events'] == "text") {
@@ -104,7 +115,7 @@ function mfgigcal_getrows() {
 			
 		$mfgigcal_data .= "<div class=\"info_block\"><h3>";
 		if (!$_GET[event_id]) {
-			$mfgigcal_data .= "<a href=\"?event_id=$mfgigcal_event->id\">" . $mfgigcal_event->title . "</a>";
+			$mfgigcal_data .= "<a href=\"" . $query_prefix . "event_id=$mfgigcal_event->id\">" . $mfgigcal_event->title . "</a>";
 		}	
 		else {
 			$mfgigcal_data .= $mfgigcal_event->title;
@@ -716,7 +727,7 @@ function mfgigcal_CalendarNav() {
 	else {
 		$existing = "?";
 		foreach ($_GET as  $k => $v) {
-			if ($k != "ytd") $existing .= $k . "=" . $v . "&";
+			if ($k != "ytd" && $k != "event_id") $existing .= $k . "=" . $v . "&";
 		}
 		$query_prefix = $existing;
 	}
