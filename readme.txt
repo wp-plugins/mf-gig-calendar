@@ -74,7 +74,7 @@ The output is only sorted by date, so if you enter multiple events on the same d
 = Can I change the look of the calendar on my site? =
 A very basic stylesheet is included in the file '/wp-content/plugins/mf-gig-calendar/mf_gig_calendar.css'. The stylesheet contains an outline/example of the basic output to help you style the calendar as you like. Got your own interesting layout you'd like to share for me to include in a future update? Let me know!
 
-= Why do you ask me to enter a URL for my calendar in the settings? Shouldn't that just happen automatically =
+= Why do you ask me to enter a URL for my calendar in the settings? Shouldn't that just happen automatically? =
 The MF Gig Calendar widget and the RSS feed use the URL you enter in Settings to link to the calendar on your site. You can put the calendar in any Page or Post on your site - even in more than one place - so this URL is the place you want people to go to see what's going on. It's completely optional. The plugin will work fine without it.
 
 = Why doesn't MF Gig Calendar...(insert your cool idea here)...? =
