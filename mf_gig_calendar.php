@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.3
+Version: 0.9.4.1
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -212,8 +212,10 @@ function mfgigcal_register_settings() {
 	//register our settings
 	register_setting( 'mfgigcal_settings', 'mfgigcal_settings', 'mfgigcal_settings_validate' );
 	
+	add_settings_section('mfgigcal_settings_setup', 'Basic Setup', 'mfgigcal_settings_display_setup', 'mfgigcal');
+	
 
-	add_settings_section('mfgigcal_settings_display', 'Oh Make My Events Behave', 'mfgigcal_settings_display_text', 'mfgigcal');
+	add_settings_section('mfgigcal_settings_display', 'Oh Make My Events Behave - Optional Settings', 'mfgigcal_settings_display_text', 'mfgigcal');
 	
 	
 	add_settings_field('upcoming_title', 'Calendar Title', 'mfgigcal_settings_display_upcoming_field', 'mfgigcal', 'mfgigcal_settings_display');
@@ -226,10 +228,18 @@ function mfgigcal_settings_validate($input) {
 	return $input;
 }
 
+function mfgigcal_settings_display_setup() {
+	echo "<p>Basic installation is easy. Just place this short code on any Page or Post where you want the event list to appear: </p>
+	
+	<pre>[mfgigcal]</pre>
+	
+	<p><a href=\"admin.php?page=mf_gig_calendar\">Enter some events</a> and you'll be up and running. Learn more about how it works on the <a href=\"admin.php?page=mf_gig_calendar_about\">About Page</a>.<br><br></p>
+	";
+}
 
 
 function mfgigcal_settings_display_text() {
-	echo "<p>MF Gig Calendar provides you with some basic settings to control and personalize how you want your event calendar to appear in your Wordpress site.</p>";
+	echo "<p>Once you have that working you can customize MF Gig Calendar slightly with the following optional settings.</p>";
 }
 
 function mfgigcal_settings_display_rss_field() {
@@ -259,7 +269,7 @@ function mfgigcal_settings_display_url_field() {
     $siteurl = get_option('siteurl');
 	$options = get_option('mfgigcal_settings');
 	?>
-	<p>You can put your event calendar on any Page or Post on your site, so you need to let MF Gig Calendar know where it is! Enter the URL for where you are displaying your calendar - the one that you want to use as the main link in the widget and the optional RSS feed</p>
+	<p>You can put your event calendar on any Page or Post on your site, once you have it working you can let MF Gig Calendar know where it is by entering a URL of the Page or Post here. MF Gig Calendar will use this URL in the RSS feed and in the widget.</p>
 	<p><input type="text" id="calendar_url" name="mfgigcal_settings[calendar_url]" style="width:300px;" value="<?=$options['calendar_url']?>"> <i>Example: <?=$siteurl?>/events</i></p>
 	
 	<?php
@@ -288,7 +298,7 @@ function mfgigcal_settings_page () {
 	<?php } ?>
 	
 	<div class="wrap">
-	<h2>Calendar Settings</h2>
+	<h2>MF Gig Calendar Settings</h2>
 	
 	<form method="post" action="options.php">    
 	<?php settings_fields( 'mfgigcal_settings' ); ?>

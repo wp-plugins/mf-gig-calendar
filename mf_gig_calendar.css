@@ -130,6 +130,10 @@ ul#cal {
 	margin:0 0 0 7.5em;
 }
 
+#cal .info_block h3 {
+	clear:none;
+}
+
 #cal .weekday {
 	font-size:.9em;
 	text-transform:uppercase;

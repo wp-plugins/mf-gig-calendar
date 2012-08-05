@@ -105,7 +105,7 @@ class GigCalendarWidget extends WP_Widget {
 		</p>
 		<p>
 			<label><input class="link_detail_switch" id="<?php echo $this->get_field_id( 'calendar_link' ); ?>" name="<?php echo $this->get_field_name( 'calendar_link' ); ?>" type="checkbox" value="1" <?php checked( '1', $calendar_link ); ?> />
-			Link this widget to my event calendar 
+			Add a link to the URL for my event calendar that I specified in my <a href="admin.php?page=mf_gig_calendar_settings">MF Gig Calendar Settings page</a>.
 			</label>
 		</p>
 		<div class="link_details">
@@ -115,7 +115,7 @@ class GigCalendarWidget extends WP_Widget {
 			</label>
 		</p>
 		<p>
-			To include a link in your widget you need to also tell MF Gig Calendar where to find your calendar! Visit the <a href="admin.php?page=mf_gig_calendar_settings">settings page</a> to enter the URL for a Page or Post that contains your calendar.
+			Note: If the "View My Calendar" link isn't displaying in your widget please make sure you have entered a URL for your calendar on the <a href="admin.php?page=mf_gig_calendar_settings">settings page</a>.
 		</p>
 		</div>
 		
