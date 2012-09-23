@@ -2,19 +2,16 @@
 Contributors: brewermfnyc
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=matthew@matthewfries.com
 Tags: calendar, event, gig, musician, Matthew Fries, brewermfnyc
-Requires at least: 3.3
-Tested up to: 3.4.1
-Stable tag: 0.9.4.1
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Requires at least: 3.3
+Tested up to: 3.4.1
+Stable tag: 0.9.5
 
-
-== Short Description ==
-
-A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-
+A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more. 
+Version 0.9.5 includes some important security fixes.
 
 == Description ==
 
@@ -92,6 +89,10 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 5. Front end - example of website display
 
 == Changelog ==
+
+**Version 0.9.5**
+
+* Security fixes! Silly me. Please update!
 
 **Version 0.9.4.1**
 

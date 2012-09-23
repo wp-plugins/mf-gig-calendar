@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.4.1
+Version: 0.9.5
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -55,12 +55,16 @@ function mfgigcal_getrows() {
 	$today = date("Y-m-d");
 	
 	$sql = "SELECT * FROM $mfgigcal_table ";
-			
-	if ($_GET[ytd]) {
-		$sql .= "WHERE (end_date >= '$_GET[ytd]-01-01' AND start_date <= '$_GET[ytd]-12-31') ";
+	
+	// clean the variables
+	$ytd = mfgigcal_Clean($_GET[ytd]);
+	$event_id = mfgigcal_Clean($_GET[event_id]);
+	
+	if ($ytd) {
+		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
-	else if ($_GET[event_id]) {
-		$sql .= "WHERE id = '$_GET[event_id]' ";
+	else if ($event_id) {
+		$sql .= "WHERE id = '" . $event_id . "' ";
 	}
 	else {
 		$sql .= "WHERE end_date >= '$today' ";
@@ -576,10 +580,12 @@ function mfgigcal_list_events() {
 	// get the dates
 	$today = date("Y-m-d");
 	
+	$ytd = mfgigcal_Clean($_GET[ytd]);
+	
 	$sql = "SELECT * FROM $mfgigcal_table ";
 			
-	if ($_GET[ytd]) {
-		$sql .= "WHERE (end_date >= '$_GET[ytd]-01-01' AND start_date <= '$_GET[ytd]-12-31') ";
+	if ($ytd) {
+		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
 	else {
 		$sql .= "WHERE end_date >= '$today' ";
@@ -742,11 +748,14 @@ function mfgigcal_CalendarNav() {
 		$query_prefix = $existing;
 	}
 	
-	if ($_GET[ytd]) {
-		$mfgigcal_nav = "<h2>$_GET[ytd] Events</h2>";
+	$ytd = mfgigcal_Clean($_GET[ytd]);
+	$event_id = mfgigcal_Clean($_GET[event_id]);
+	
+	if ($ytd) {
+		$mfgigcal_nav = "<h2>" . $ytd . " Events</h2>";
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">Upcoming</a> | Archive: ";
 	}
-	else if ($_GET[event_id]) {
+	else if ($event_id) {
 		$mfgigcal_nav = "<h2>Event Information</h2>";
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">Upcoming</a> | Archive: ";
 	}
@@ -759,7 +768,7 @@ function mfgigcal_CalendarNav() {
 	
 	
 	for ($i=$last_year;$i>=$first_year;$i--) {
-		($i == $_GET[ytd]) ? $mfgigcal_nav .= "<strong>$i</strong> " : $mfgigcal_nav .= "<a href=\"" . $query_prefix . "ytd=$i\">$i</a> ";
+		($i == $ytd) ? $mfgigcal_nav .= "<strong>$i</strong> " : $mfgigcal_nav .= "<a href=\"" . $query_prefix . "ytd=$i\">$i</a> ";
 	}
 	$mfgigcal_nav .= "</div>";
 	return $mfgigcal_nav;
@@ -837,7 +846,14 @@ function mfgigcal_admin_PrintTruncated($maxLength, $html) {
     return $mfgigcal_html;
 }
 
-
+function mfgigcal_Clean($var) {
+	if (strval(intval($var)) == strval($var)) { // we're only using numbers. Nothing else is allowed.
+		return $var;
+	}
+	else {
+		return false;
+	}
+}
 
 
 
