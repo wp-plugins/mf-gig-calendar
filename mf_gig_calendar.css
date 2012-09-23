@@ -132,6 +132,8 @@ ul#cal {
 
 #cal .info_block h3 {
 	clear:none;
+	margin-top:0;
+	padding-top:0;
 }
 
 #cal .weekday {
