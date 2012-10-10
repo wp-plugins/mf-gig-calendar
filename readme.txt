@@ -8,10 +8,9 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
 Tested up to: 3.4.1
-Stable tag: 0.9.5
+Stable tag: 0.9.6
 
-A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more. 
-Version 0.9.5 includes some important security fixes.
+A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
 == Description ==
 
@@ -27,7 +26,7 @@ I'm Matthew Fries (that's where the MF in MF Gig Calendar comes from) and I'm a 
 
 The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - even in more than one place. Just include the following short code where you want the calendar to appear: 
 
-‘[mfgigcal]’
+`[mfgigcal]`
 
 Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.4.1.
 
@@ -55,7 +54,7 @@ As a general rule I've tried to keep this as simple and flexible as possible. If
 == Frequently Asked Questions ==
 
 = How do I get a calendar to show up in a Page or Post on my site? =
-Easy! Use the MF Gig Calendar shortcode: [mfgigcal]
+Easy! Use the MF Gig Calendar shortcode: `[mfgigcal]`
 
 Just put that code on any Page or Post in the spot where you want the calendar to appear. Wordpress does the rest and any settings are optional.
 
@@ -89,6 +88,12 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 5. Front end - example of website display
 
 == Changelog ==
+
+**Version 0.9.6**
+
+* Internationalized date display is now based on Wordpress language settings
+* Prepared the plugin for internationalization - waiting on translations!
+* Event titles in widget now link to individual events if the calendar location is set in the plugin settings.
 
 **Version 0.9.5**
 
