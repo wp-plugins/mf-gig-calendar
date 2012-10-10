@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class GigCalendarWidget extends WP_Widget {
 
 	function GigCalendarWidget() {
-		parent::WP_Widget( false, $name = 'MF Gig Calendar', array( 'description' => 'MF Gig Calendar Widget displays a list of upcoming events.' ) );
+		parent::WP_Widget( false, $name = 'MF Gig Calendar', array( 'description' => __('MF Gig Calendar Widget displays a list of upcoming events.', 'mfgigcal') ) );
 	}
 	 
 	function widget( $args, $instance ) {
@@ -61,13 +61,18 @@ class GigCalendarWidget extends WP_Widget {
 				$end_date = mktime(0,0,0,$endArray[1],$endArray[2],$endArray[0]);
 				
 				if ($start_date == $end_date) { // single date format
-					echo "<div class=\"date\">" . date("D j M", $start_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
+					echo "<div class=\"date\">" . date_i18n("D j M", $start_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
 				}
 				else { // multi-day format
-					echo "<div class=\"date\">" . date("j M", $start_date) . "&ndash;" . date("j M", $end_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
+					echo "<div class=\"date\">" . date_i18n("j M", $start_date) . "&ndash;" . date_i18n("j M", $end_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
 				}
-			
-				echo "\n<h4>$mfgigcal_event->title</h4>";
+				
+				if ($mfgigcal_settings['calendar_url']) {
+					echo "\n<h4><a href=\"" . $mfgigcal_settings['calendar_url'] . "?event_id=" . $mfgigcal_event->id . "\">$mfgigcal_event->title</a></h4>";
+				}
+				else {
+					echo "\n<h4>$mfgigcal_event->title</h4>";
+				}
 				echo $mfgigcal_event->location;
 				echo "</li>";
 			}
@@ -90,32 +95,32 @@ class GigCalendarWidget extends WP_Widget {
 		$events_to_display = esc_attr( $instance['events_to_display']);
 		$calendar_link = esc_attr( $instance['calendar_link']);
 		$link_text = esc_attr( $instance['link_text']);
-		if ($link_text == "") $link_text = "View My Event Calendar";
+		if ($link_text == "") $link_text = __('View My Event Calendar', 'mfgigcal');
 		?>
 		
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>">Widget Title:
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Widget Title', 'mfgigcal'); ?>:
 			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" />
 			</label>
 		</p>
 		<p>
-			<label>How many events to display? 
+			<label><?php _e('How many events to display?', 'mfgigcal'); ?>
 			<input style="width:30px;" id="<?php echo $this->get_field_id( 'events_to_display' ); ?>" name="<?php echo $this->get_field_name( 'events_to_display' ); ?>" type="text" value="<?php echo $events_to_display; ?>" />
 			</label>
 		</p>
 		<p>
 			<label><input class="link_detail_switch" id="<?php echo $this->get_field_id( 'calendar_link' ); ?>" name="<?php echo $this->get_field_name( 'calendar_link' ); ?>" type="checkbox" value="1" <?php checked( '1', $calendar_link ); ?> />
-			Add a link to the URL for my event calendar that I specified in my <a href="admin.php?page=mf_gig_calendar_settings">MF Gig Calendar Settings page</a>.
+			<?php _e('Add a link to the URL for my event calendar that I specified in the MF Gig Calendar Settings.', 'mfgigcal'); ?>
 			</label>
 		</p>
 		<div class="link_details">
 		<p>
-			<label>Link Text:
+			<label><?php _e('Link Text', 'mfgigcal'); ?>:
 			<input class="widefat" id="<?php echo $this->get_field_id( 'link_text' ); ?>" name="<?php echo $this->get_field_name( 'link_text' ); ?>" type="text" value="<?php echo $link_text; ?>" />
 			</label>
 		</p>
 		<p>
-			Note: If the "View My Calendar" link isn't displaying in your widget please make sure you have entered a URL for your calendar on the <a href="admin.php?page=mf_gig_calendar_settings">settings page</a>.
+			<?php _e('Note: If the "View My Calendar" link isn\'t displaying in your widget please make sure you have entered a URL for your calendar in the MF Gig Calendar Settings.', 'mfgigcal'); ?>
 		</p>
 		</div>
 		
