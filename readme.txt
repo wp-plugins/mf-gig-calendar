@@ -101,7 +101,7 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 **Version 0.9.4.1**
 
-*Really just a re-upload of version 0.9.4. Still trying to get my brain around subversion.
+* Really just a re-upload of version 0.9.4. Still trying to get my brain around subversion.
 
 **Version 0.9.4**
 
