@@ -8,7 +8,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
 Tested up to: 3.4.1
-Stable tag: 0.9.6
+Stable tag: 0.9.6.1
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -89,6 +89,10 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+**Version 0.9.6.1**
+
+* Added the translation tools. They did not upload in the 0.9.6 update. Subversion makes my brain hurt.
+
 **Version 0.9.6**
 
 * Internationalized date display is now based on Wordpress language settings
@@ -149,4 +153,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.6 adds links to the widget and internationalization throughout the plugin - plus a few other small changes.
+Version 0.9.6.1 adds links to the widget and internationalization throughout the plugin - plus a few other small changes.
