@@ -47,7 +47,7 @@ As a general rule I've tried to keep this as simple and flexible as possible. If
 
 1. Upload the folder 'mf-gig-calendar' to the '/wp-content/plugins/' directory,
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Insert the shortcode '[mfgigcal]' wherever you want the calendar to appear.
+3. Insert the shortcode `[mfgigcal]` wherever you want the calendar to appear.
 4. Start entering events under the 'Event Calendar' menu!
 
 
