@@ -149,4 +149,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.4 makes a few improvements in calendar display and updates some of the documentation.
+Version 0.9.6 adds links to the widget and internationalization throughout the plugin - plus a few other small changes.
