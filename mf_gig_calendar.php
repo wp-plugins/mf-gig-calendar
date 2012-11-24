@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.6.1
+Version: 0.9.7
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Stylesheet for display
 
 function mfgigcal_load_stylesheet() {
-    $url = plugins_url('mf_gig_calendar.css', __FILE__);
+    $url = plugins_url('/css/mf_gig_calendar.css', __FILE__);
     wp_register_style('mfgigcal_css', $url);
     wp_enqueue_style( 'mfgigcal_css');
 }
@@ -80,7 +80,8 @@ function mfgigcal_getrows() {
 	}
 	
 	if (get_option('permalink_structure')) {
-		$query_prefix = "?";
+		global $post;
+		$query_prefix = get_permalink(get_post( $post )->id) . "?";
 	}
 	else {
 		$existing = "?";
@@ -201,13 +202,37 @@ function mfgigcal_admin_menu() {
 // Stylesheet for admin
 
 function mfgigcal_admin_register_head() {
-    $siteurl = get_option('siteurl');
-    $url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/mf_gig_calendar_admin.css';
-    echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
-	echo '<script type="text/javascript" src="' . $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/mf_gig_calendar_admin.js"></script>';
-	echo '<link rel="stylesheet" type="text/css" href="' . $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/datepicker-4.0.2/jquery.datepick.css" />';
-	echo '<script type="text/javascript" src="' . $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/datepicker-4.0.2/jquery.datepick.js"></script>';
-	echo '';
+	global $post, $wp_locale;
+	
+    // add the jQuery UI elements shipped with WP
+    wp_enqueue_script( 'jquery' );
+    wp_enqueue_script( 'jquery-ui-datepicker' );
+
+	// add the style
+	wp_enqueue_style( 'jquery.ui.theme', plugins_url( '/css/jquery-ui-1.9.2.custom.css', __FILE__ ) );
+ 	wp_enqueue_style( 'mfgigcal-css', plugins_url( '/css/mf_gig_calendar_admin.css', __FILE__ ) );  
+ 	
+    // add mfgigcal js
+	wp_enqueue_script( 'mfgigcal-admin', $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/mf_gig_calendar_admin.js', array( 'jquery-ui-datepicker' ) );
+ 
+    // localize our js for datepicker
+    $aryArgs = array(
+        'closeText'         => __( 'Done', 'mfgigcal' ),
+        'currentText'       => __( 'Today', 'mfgigcal' ),
+        'monthNames'        => strip_array_indices( $wp_locale->month ),
+        'monthNamesShort'   => strip_array_indices( $wp_locale->month_abbrev ),
+        'monthStatus'       => __( 'Show a different month', 'mfgigcal' ),
+        'dayNames'          => strip_array_indices( $wp_locale->weekday ),
+        'dayNamesShort'     => strip_array_indices( $wp_locale->weekday_abbrev ),
+        'dayNamesMin'       => strip_array_indices( $wp_locale->weekday_initial ),
+        // get the start of week from WP general setting
+        'firstDay'          => get_option( 'start_of_week' ),
+        // is Right to left language? default is false
+        'isRTL'             => $wp_locale->is_rtl,
+    );
+ 
+    // Pass the translation array to the enqueued JS for datepicker
+    wp_localize_script( 'mfgigcal-admin', 'objectL10n', $aryArgs );
 }
 
 
@@ -276,7 +301,6 @@ function mfgigcal_settings_display_url_field() {
 	?>
 	<p><?php _e('You can put your event calendar on any Page or Post on your site, once you have it working you can let MF Gig Calendar know where it is by entering a URL of the Page or Post here. MF Gig Calendar will use this URL in the RSS feed and in the widget.', 'mfgigcal'); ?></p>
 	<p><input type="text" id="calendar_url" name="mfgigcal_settings[calendar_url]" style="width:300px;" value="<?=$options['calendar_url']?>"> <i><?php _e('Example', 'mfgigcal'); ?>: <?=$siteurl?>/events</i></p>
-	
 	<?php
 }
 
@@ -377,6 +401,13 @@ function mfgigcal_about_page() {
 	
 	<p>Have fun!<br />
 	Matthew</p>
+	
+	<br>
+	
+	<h3>Credits</h3>
+	<p>
+	Polish translation by: Julian Battelli
+	</p>
 	<?php
 	
 	echo '</div>';
@@ -694,6 +725,32 @@ function remove_wp_magic_quotes() {
 	$_REQUEST = stripslashes_deep($_REQUEST);
 }
 
+function strip_array_indices( $ArrayToStrip ) {
+    foreach( $ArrayToStrip as $objArrayItem) {
+        $NewArray[] =  $objArrayItem;
+    }
+ 
+    return( $NewArray );
+}
+
+function date_format_php_to_js( $sFormat ) {
+    switch( $sFormat ) {
+        //Predefined WP date formats
+        case 'F j, Y':
+            return( 'MM dd, yy' );
+            break;
+        case 'Y/m/d':
+            return( 'yy/mm/dd' );
+            break;
+        case 'm/d/Y':
+            return( 'mm/dd/yy' );
+            break;
+        case 'd/m/Y':
+            return( 'dd/mm/yy' );
+            break;
+     }
+}
+
 function mfgigcal_ExtractDate($date, $format) {
 	
 	if ($date == "0000-00-00" || !$date) return false;
@@ -742,7 +799,8 @@ function mfgigcal_CalendarNav() {
 		$query_prefix = "?page=mf_gig_calendar&";
 	}
 	else if (get_option('permalink_structure')) {
-		$query_prefix = "?";
+		global $post;
+		$query_prefix = get_permalink(get_post( $post )->id) . "?";
 	}
 	else {
 		$existing = "?";
@@ -755,6 +813,11 @@ function mfgigcal_CalendarNav() {
 	$ytd = mfgigcal_Clean($_GET[ytd]);
 	$event_id = mfgigcal_Clean($_GET[event_id]);
 	
+	$mfgigcal_settings = get_option('mfgigcal_settings');
+	if ($mfgigcal_settings['always_use_url'] && $mfgigcal_settings['calendar_url'] && !is_admin()) {
+		$link_prefix = $mfgigcal_settings['calendar_url'];
+	}
+	
 	if ($ytd) {
 		$mfgigcal_nav = "<h2>" . $ytd . " " . __('Events', 'mfgigcal') . "</h2>";
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
@@ -764,12 +827,10 @@ function mfgigcal_CalendarNav() {
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else {
-		$mfgigcal_settings = get_option('mfgigcal_settings');
 		($mfgigcal_settings['upcoming_title'] == "") ? $upcoming_title = __('Upcoming Events', 'mfgigcal') : $upcoming_title = $mfgigcal_settings['upcoming_title'];
 		$mfgigcal_nav = "<h2>$upcoming_title</h2>";
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Archive', 'mfgigcal') . ": ";
 	}
-	
 	
 	for ($i=$last_year;$i>=$first_year;$i--) {
 		($i == $ytd) ? $mfgigcal_nav .= "<strong>$i</strong> " : $mfgigcal_nav .= "<a href=\"" . $query_prefix . "ytd=$i\">$i</a> ";

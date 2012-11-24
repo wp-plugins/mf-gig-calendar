@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 3.4.1
-Stable tag: 0.9.6.1
+Tested up to: 3.4.2
+Stable tag: 0.9.7
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -23,6 +23,7 @@ I'm Matthew Fries (that's where the MF in MF Gig Calendar comes from) and I'm a 
 * an RSS feed
 * a widget to list a few upcoming events in the sidebar
 * an archive to view past events by year
+* supports localization (waiting on translations...)
 
 The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - even in more than one place. Just include the following short code where you want the calendar to appear: 
 
@@ -31,7 +32,8 @@ The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - 
 Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.4.1.
 
 = Future Plans = 
-* a template in the options so you can control the output of the calendar info so it appears exactly the way you want?
+* ability to display ranges of dates using variables in the shortcode
+* a template in the options so you can control the HTML output of the calendar info so it appears exactly the way you want?
 * (Other ideas? Please tell me!)
 
 Want to keep in touch? Here are a few options...
@@ -65,16 +67,16 @@ MF Gig Calendar uses the built-in Wordpress WYSIWYG editor. It's exactly the sam
 One database table is installed to store your events. That's it!
 
 = What happens if I add more than one event on a particular day? =
-The output is only sorted by date, so if you enter multiple events on the same day they will be displayed on most servers in the order you created them. I don't sort by time because I don't require you to enter a time for your event and you can use whatever term you want (2pm, afternoon, all day, 20.30, etc).
+The output is only sorted by date, so if you enter multiple events on the same day they will be displayed on most servers in the order you created them. I chose not to sort by time because I don't require you to enter a time for your event and allow you to use whatever term you want (2pm, afternoon, all day, 20.30, etc).
 
 = Can I change the look of the calendar on my site? =
-A very basic stylesheet is included in the file '/wp-content/plugins/mf-gig-calendar/mf_gig_calendar.css'. The stylesheet contains an outline/example of the basic output to help you style the calendar as you like. Got your own interesting layout you'd like to share for me to include in a future update? Let me know!
+Most of the look of the calendar is controlled by your theme. A very small stylesheet to control basic layout is included in the file '/wp-content/plugins/mf-gig-calendar/mf_gig_calendar.css'. The stylesheet contains an outline/example of the basic output to help you style the calendar as you like. Got your own interesting layout you'd like to share for me to include in a future update? Let me know!
 
 = Why do you ask me to enter a URL for my calendar in the settings? Shouldn't that just happen automatically? =
 The MF Gig Calendar widget and the RSS feed use the URL you enter in Settings to link to the calendar on your site. You can put the calendar in any Page or Post on your site - even in more than one place - so this URL is the place you want people to go to see what's going on. It's completely optional. The plugin will work fine without it.
 
 = Why doesn't MF Gig Calendar...(insert your cool idea here)...? =
-I tried to keep the basics of this plugin pretty simple so that it would be useful to a broader range of people. If you have a suggestion for a really useful feature please let me know and I'll consider adding it in a future update!
+I tried to keep the basics of this plugin pretty simple so that it would be useful to a broader range of people. It's all about displaying a useful list of events on one page or post and nothing more. If you have a suggestion for a really useful feature please let me know and I'll consider adding it in a future update!
 
 == Screenshots ==
 1. Admin screen - list of events
@@ -88,6 +90,12 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 5. Front end - example of website display
 
 == Changelog ==
+
+**Version 0.9.7**
+
+* Fixed links to individual events to work with some AJAX powered themes
+* Localization of the Date-Picker jQuery utility
+* Polish translation (thanks to Julian Battelli)
 
 **Version 0.9.6.1**
 

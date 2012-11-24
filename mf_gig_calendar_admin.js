@@ -1,7 +1,17 @@
 //$().ready(function() {
 jQuery(document).ready(function( $ ) {	
-	$(".datepicker").datepick({
-		dateFormat: 'yyyy-mm-dd',
+	$(".datepicker").datepicker({// Show the 'close' and 'today' buttons
+		showButtonPanel: true,
+		closeText: objectL10n.closeText,
+		currentText: objectL10n.currentText,
+		monthNames: objectL10n.monthNames,
+		monthNamesShort: objectL10n.monthNamesShort,
+		dayNames: objectL10n.dayNames,
+		dayNamesShort: objectL10n.dayNamesShort,
+		dayNamesMin: objectL10n.dayNamesMin,
+		firstDay: objectL10n.firstDay,
+		isRTL: objectL10n.isRTL,
+		dateFormat: 'yy-mm-dd',
 		onSelect: function(dates) { 
 			if ($("#multi").is(':checked')) {
 				// check the end day is greater
