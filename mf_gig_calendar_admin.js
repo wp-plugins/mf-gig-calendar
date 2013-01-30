@@ -44,6 +44,46 @@ jQuery(document).ready(function( $ ) {
 		}
 	});
 	
+	
+	
+	// form validation
+	required = ["title", "start_date"];
+	
+	// If using an ID other than #email or #error then replace it here
+	errornotice = $("#mfgigcal_error_message");
+
+	$("#edit_event_form").submit(function(){
+		//Validate required fields
+		for (i=0;i<required.length;i++) {
+			var input = $('#'+required[i]);
+			if ((input.val() == "") || (input.val() == emptyerror)) {
+				input.addClass("needsfilled");
+				$(".required").css({'color' : 'red', 'font-weight' : 'bold'});
+				errornotice.fadeIn(750);
+			} else {
+				input.removeClass("needsfilled");
+			}
+		}
+	
+		//if any inputs on the page have the class 'needsfilled' the form will not submit
+		if ($(":input").hasClass("needsfilled")) {
+			return false;
+		} else {
+			errornotice.hide();
+			return true;
+		}
+	});
+	
+	// Clears any fields in the form when the user clicks on them
+	$(":input").focus(function(){
+	   if ($(this).hasClass("needsfilled") ) {
+			$(this).val("");
+			$(this).removeClass("needsfilled");
+	   }
+	});
+
+	
+	
 
 });
 

@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 3.4.2
-Stable tag: 0.9.7
+Tested up to: 3.5.1
+Stable tag: 0.9.8
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -24,15 +24,15 @@ I'm Matthew Fries (that's where the MF in MF Gig Calendar comes from) and I'm a 
 * a widget to list a few upcoming events in the sidebar
 * an archive to view past events by year
 * supports localization (waiting on translations...)
+* ability to display ranges of dates using variables in the shortcode
 
 The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - even in more than one place. Just include the following short code where you want the calendar to appear: 
 
 `[mfgigcal]`
 
-Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.4.1.
+Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.5.1.
 
 = Future Plans = 
-* ability to display ranges of dates using variables in the shortcode
 * a template in the options so you can control the HTML output of the calendar info so it appears exactly the way you want?
 * (Other ideas? Please tell me!)
 
@@ -49,8 +49,10 @@ As a general rule I've tried to keep this as simple and flexible as possible. If
 
 1. Upload the folder 'mf-gig-calendar' to the '/wp-content/plugins/' directory,
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Insert the shortcode `[mfgigcal]` wherever you want the calendar to appear.
+3. Insert the shortcode `[mfgigcal]` wherever you want the calendar to appear (read the instructions in the widget for advanced display options).
 4. Start entering events under the 'Event Calendar' menu!
+
+Easy peasy.
 
 
 == Frequently Asked Questions ==
@@ -75,6 +77,9 @@ Most of the look of the calendar is controlled by your theme. A very small style
 = Why do you ask me to enter a URL for my calendar in the settings? Shouldn't that just happen automatically? =
 The MF Gig Calendar widget and the RSS feed use the URL you enter in Settings to link to the calendar on your site. You can put the calendar in any Page or Post on your site - even in more than one place - so this URL is the place you want people to go to see what's going on. It's completely optional. The plugin will work fine without it.
 
+= My calendar is blowing up the design on my page exteng past the margins! The fonts don't match the fonts on my site! What is going on? =
+The first thing to check is that you don't have `<pre>` tags around your shortcode. Sometimes formatting comes along when you cut and paste into the Wordpress editor. If you flip to the "Text" tab in the editor you might see something like this: `<pre>[mfgigcal]</pre>` Get those `<pre>` tags out of there!
+
 = Why doesn't MF Gig Calendar...(insert your cool idea here)...? =
 I tried to keep the basics of this plugin pretty simple so that it would be useful to a broader range of people. It's all about displaying a useful list of events on one page or post and nothing more. If you have a suggestion for a really useful feature please let me know and I'll consider adding it in a future update!
 
@@ -90,6 +95,13 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 5. Front end - example of website display
 
 == Changelog ==
+
+**Version 0.9.8**
+
+* The archive now (correctly) only shows past events
+* Ability to choose your date format in the widget
+* Ability to selectively display ranges of dates, specific dates, or a single event
+* Bug squashing
 
 **Version 0.9.7**
 
@@ -161,4 +173,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.6.1 adds links to the widget and internationalization throughout the plugin - plus a few other small changes.
+Version 0.9.8 adds a heap of features and a few fixes.

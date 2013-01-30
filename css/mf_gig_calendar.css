@@ -61,7 +61,7 @@ a.rss-link {
 	display:block;
 	height:16px;
 	float:right;
-	background:transparent url(images/icon-rss.png) right top no-repeat;
+	background:transparent url(../images/icon-rss.png) right top no-repeat;
 	padding-right:20px;
 	line-height:16px;
 }
@@ -94,7 +94,7 @@ ul#cal {
 	text-align:right;
 	width:3em;
 	padding-right: .5em;
-	background:transparent url(images/hyphen.png) right 2em no-repeat;
+	background:transparent url(../images/hyphen.png) right 2em no-repeat;
 	overflow:hidden;
 }
 
@@ -107,7 +107,7 @@ ul#cal {
 
 #cal .year {
 	font-size:.8em;
-	line-height:.8em;
+	line-height:1em;
 	letter-spacing: .1em;
 }
 
