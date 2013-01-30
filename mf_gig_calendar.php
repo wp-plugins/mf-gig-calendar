@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.7
+Version: 0.9.8
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 
-
 // Stylesheet for display
 
 function mfgigcal_load_stylesheet() {
@@ -40,14 +39,22 @@ add_action('wp_print_styles', 'mfgigcal_load_stylesheet');
 // [mfgigcal] - SHORT CODE functions
 
 function mfgigcal_func( $atts ){
-	return mfgigcal_getrows();
+	return mfgigcal_getrows($atts);
 }
 add_shortcode( 'mfgigcal', 'mfgigcal_func' );
 
-function mfgigcal_getrows() {
+function mfgigcal_getrows($atts) {
+	extract( shortcode_atts( array( 
+		'id' => '', 
+		'date' => '',
+		'range' => '',
+	), $atts ) );
+	
 	$mfgigcal_settings = get_option('mfgigcal_settings');
 	global $wpdb;
 	$mfgigcal_table = $wpdb->prefix . "mfgigcal";
+	
+	date_default_timezone_set(get_option('timezone_string'));
 	
 	// get the dates
 	$today = date("Y-m-d");
@@ -58,23 +65,43 @@ function mfgigcal_getrows() {
 	$ytd = mfgigcal_Clean($_GET[ytd]);
 	$event_id = mfgigcal_Clean($_GET[event_id]);
 	
-	if ($ytd) {
+	if ($ytd == date("Y") && empty($atts)) {
+		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
+	}
+	else if ($ytd && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
 	else if ($event_id) {
 		$sql .= "WHERE id = '" . $event_id . "' ";
 	}
-	else {
+	
+	
+	
+	// handle the shortcode variables
+	else if ($id) {
+		$sql .= "WHERE id = '" . $id . "' ";
+	}
+	else if ($date) {
+		$sql .= "WHERE (end_date >= '" . $date . "' AND start_date <= '" . $date . "') OR end_date = '" . $date . "' ";
+	}
+	else if ($range) {
+		$start_date = substr($range, 0, strpos($range, ':'));
+		$end_date = substr($range, strpos($range, ':') + 1);
+		$sql .= "WHERE (start_date >= '" . $start_date . "' AND end_date <= '" . $end_date . "') ";
+	}
+	
+	
+	
+	else { // default view displays upcoming events
 		$sql .= "WHERE end_date >= '$today' ";
 	}	
 	$sql .= "ORDER BY start_date ASC";
-	//$mfgigcal_events = GetArray($sql);
 	
 	$mfgigcal_events = $wpdb->get_results($sql);
 	
 	$mfgigcal_data = "";
 	
-	if ($mfgigcal_settings['rss']) {
+	if ($mfgigcal_settings['rss'] && empty($atts)) {
 		(get_option('permalink_structure')) ? $feed_link = "/feed/events" : $feed_link = "/?feed=events";
 		$mfgigcal_data .= "<a href=\"$feed_link\" class=\"rss-link\">RSS</a>"; 
 	}
@@ -91,9 +118,15 @@ function mfgigcal_getrows() {
 		$query_prefix = $existing;
 	}
 	
-	$mfgigcal_data .= mfgigcal_CalendarNav();
+	if (empty($atts) || $event_id) { // don't show the nav if we're working with shortcode display
+		$mfgigcal_data .= mfgigcal_CalendarNav();
+	}
 	
 	if (empty($mfgigcal_events) && $mfgigcal_settings['no-events'] == "text") {
+		$mfgigcal_data .= "<p>" . $mfgigcal_settings['message'] . "</p>";
+		return $mfgigcal_data;
+	}
+	else if (empty($mfgigcal_events) && !empty($atts)) {
 		$mfgigcal_data .= "<p>" . $mfgigcal_settings['message'] . "</p>";
 		return $mfgigcal_data;
 	}
@@ -203,6 +236,7 @@ function mfgigcal_admin_menu() {
 
 function mfgigcal_admin_register_head() {
 	global $post, $wp_locale;
+	date_default_timezone_set(get_option('timezone_string'));
 	
     // add the jQuery UI elements shipped with WP
     wp_enqueue_script( 'jquery' );
@@ -261,7 +295,7 @@ function mfgigcal_settings_validate($input) {
 function mfgigcal_settings_display_setup() {
 	echo "<p>" . __('Basic installation is easy. Just place this short code on any Page or Post where you want the event list to appear', 'mfgigcal') . ": </p>
 	
-	<pre>[mfgigcal]</pre>
+	<p>[mfgigcal]</p>
 	
 	<p>" . __('Enter some events and you\'ll be up and running') . ": <a href=\"admin.php?page=mf_gig_calendar&action=edit\">" . __('Create Event', 'mfgigcal') . "</a><br>
 	" . __('Learn more about how it works on the About Page', 'mfgigcal') . ": <a href=\"admin.php?page=mf_gig_calendar_about\">" . __('About MF Gig Calendar', 'mfgigcal') . "</a><br><br></p>";
@@ -349,19 +383,30 @@ function mfgigcal_about_page() {
 	
 	?>
 	
-	<h3><?php _e('Basic Usage'); ?></h3>
+	<h3><?php _e('Basic Usage', 'mfgigcal'); ?></h3>
 	<p><?php _e('Easy! Just place this short code on any Page or Post where you want the event calendar to appear', 'mfgigcal'); ?>: </p>
 	
-	<pre>[mfgigcal]</pre>
+	<blockquote>[mfgigcal]</blockquote>
 	
 	<p><?php _e('That\'s it! Well, that and adding some events of course...', 'mfgigcal'); ?> </p>
 	
 	<p><a href="?page=mf_gig_calendar&action=edit" class="button-primary"><?php _e('Create New Event', 'mfgigcal'); ?></a></p>
-	<br>
-	<p><?php _e('The plugin includes a handy widget you can place in your sidebar to show upcoming events. Just drag it into your sidebar to display a list of a few upcoming events', 'mfgigcal'); ?></p>
-	<p><?php _e('Be sure to also check out the Event Calendar Settings to get MF Gig Calendar behaving just the way you want', 'mfgigcal'); ?>: <a href="admin.php?page=mf_gig_calendar_settings"><?php _e('Event Calendar Settings', 'mfgigcal'); ?></a></p>
+
+	<p><?php _e('The plugin includes a handy widget you can place in your sidebar to show upcoming events. Just drag it into your sidebar to display a list of a few upcoming events.', 'mfgigcal'); ?> 
+	<?php _e('Be sure to also check out the Event Calendar Settings to get MF Gig Calendar behaving just the way you want.', 'mfgigcal'); ?>: <a href="admin.php?page=mf_gig_calendar_settings"><?php _e('Event Calendar Settings', 'mfgigcal'); ?></a></p>
 	
-	<br>
+	<h3><?php _e('Advanced Usage', 'mfgigcal'); ?></h3>
+	
+	<p><?php _e('You can display more specific event information on any PAGE or POST by including a variables in your short code.', 'mfgigcal'); ?></p>
+	
+	<blockquote>
+	[mfgigcal id=event_id] - <?php _e('display only one specific event'); ?><br>
+	[mfgigcal date=YYYY-MM-DD] - <?php _e('display events that are happening on a particular day'); ?><br>
+	[mfgigcal range=YYYY-MM-DD:YYYY-MM-DD] - <?php _e('display a range of dates (START:END)'); ?><br />
+	</blockquote>
+	
+	<p><?php _e('Note: The the archive navigation will not be displayed.'); ?></p>
+	<br >
 	
 	<h3><?php _e('Note from the Author', 'mfgigcal'); ?></h3>
 	
@@ -470,12 +515,25 @@ function mfgigcal_save_record() {
 	
 	remove_wp_magic_quotes();
 	
+	if (empty($_POST['start_date']) || empty($_POST['title'])) {
+		echo '<div class="updated"><p>' . _e('Oops! Required information was not provided. Event could not be saved.') . '</p></div>';
+		return;
+	}
+	
+	// catch bad submissions that might get lost in the database...
+	if (empty($_POST['end_date'])) {
+		$end_date = $_POST['start_date'];
+	}
+	else {
+		$end_date = $_POST['end_date'];
+	}
+	
 	if ($_POST[id]) {  // update record
 		$wpdb->update( 
 			$mfgigcal_table, 
 			array( 
 				'start_date' => $_POST[start_date], 
-				'end_date' => $_POST[end_date],
+				'end_date' => $end_date,
 				'pub_date' => date("Y-m-d H:i:s"),
 				'time' => $_POST[time],
 				'title' => $_POST[title],
@@ -498,7 +556,7 @@ function mfgigcal_save_record() {
 			$mfgigcal_table, 
 			array( 
 				'start_date' => $_POST[start_date], 
-				'end_date' => $_POST[end_date],
+				'end_date' => $end_date,
 				'pub_date' => date("Y-m-d H:i:s"),
 				'time' => $_POST[time],
 				'title' => $_POST[title],
@@ -539,10 +597,10 @@ function mfgigcal_edit_event() {
 	
 	echo "<h2>" . __('Add/Edit Event', 'mfgigcal') . "</h2>";
 	
-	echo "<form method=\"POST\" action=\"?page=mf_gig_calendar\">";
+	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
 	if ($_GET[action] == "edit") echo "<input type=\"hidden\" name=\"id\" value=\"$_GET[id]\" />";
 		echo "<table class=\"form-table\"><tr>";
-			echo "<th><label>" . __('Start Date', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ") . </label></th>";
+			echo "<th><label class=\"required\">" . __('Start Date', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ") </label></th>";
 			echo "<td><input type=\"text\" class=\"text datepicker form-required\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> <label><input type=\"checkbox\" id=\"multi\" /> Multiple Day Event</label></td>";
 		echo "</tr>";
 		echo "<tr id=\"end_date_row\">";
@@ -551,7 +609,7 @@ function mfgigcal_edit_event() {
 		echo "</tr>";
 		
 		echo "<tr>";
-			echo "<th><label>" . __('Event Title', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ")</label></th>";
+			echo "<th><label class=\"required\">" . __('Event Title', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ")</label></th>";
 			echo "<td><input type=\"text\" class=\"text form-required\" style=\"width:350px;\" name=\"title\" id=\"title\" value=\"" . str_replace('"', "&quot;", $mfgigcal_event->title) . "\" /></td>";
 		echo "</tr>";
 		
@@ -570,12 +628,8 @@ function mfgigcal_edit_event() {
 				'tinymce' => array(
 					'theme_advanced_buttons1' => 'bold,italic,underline,|,undo,redo,|,link,unlink,|,fullscreen',
 					'theme_advanced_buttons2' => '',
-					'theme_advanced_buttons3' => '',
-					'theme_advanced_buttons4' => '',
 					'height' => '200',
-					'force_br_newlines' => false,
-					'force_p_newlines' 	=> true,
-					'convert_newlines_to_brs' => false
+					'forced_root_block' => 'p'
 				),
 				'quicktags' => true
 			);
@@ -591,10 +645,10 @@ function mfgigcal_edit_event() {
 				'media_buttons' => true,
 				'wpautop' => false,
 				'tinymce' => array(
+					'theme_advanced_buttons1' => 'bold,italic,strikethrough,|,bullist,numlist,blockquote,justifyleft,justifycenter,justifyright,link,unlink,spellchecker,fullscreen',
+					'theme_advanced_buttons2' => 'formatselect,underline,justifyfull,forecolor,pastetext,pasteword,removeformat,charmap,outdent,indent,undo,redo,help',
 					'height' => '400',
-					'force_br_newlines' => false,
-					'force_p_newlines' 	=> true,
-					'convert_newlines_to_brs' => false
+					'forced_root_block' => 'p'
 				),
 				'quicktags' => true
 			);
@@ -604,8 +658,8 @@ function mfgigcal_edit_event() {
 		
 	echo "</table>";
     
-    echo '<p class="submit"><input type="submit" class="button-primary" name="save" value="' . __('Save Event', 'mfgigcal') . '" id="submitbutton"> <a href="?page=mf_gig_calendar" class="button-secondary">' . __('Cancel', 'mfgigcal') . '</a></p></form>';
-   
+    echo '<p class="submit"><input type="submit" class="button-primary" name="save" value="' . __('Save Event', 'mfgigcal') . '" id="submitbutton"> <a href="?page=mf_gig_calendar" class="button-secondary">' . __('Cancel', 'mfgigcal') . '</a>';
+	echo '&nbsp;&nbsp;<span id="mfgigcal_error_message">' . __('Please fill in all the required information to save your event.', 'mfgigcal') . '</span></p></form>';
 }
 
 function mfgigcal_list_events() {
@@ -618,8 +672,11 @@ function mfgigcal_list_events() {
 	$ytd = mfgigcal_Clean($_GET[ytd]);
 	
 	$sql = "SELECT * FROM $mfgigcal_table ";
-			
-	if ($ytd) {
+	
+	if ($ytd == date("Y")) {
+		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
+	}
+	else if ($ytd) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
 	else {
@@ -768,7 +825,7 @@ function mfgigcal_ExtractDate($date, $format) {
 		}
 	}
 	
-	return date($format, $date);
+	return date_i18n($format, $date);
 }
 
 function mfgigcal_CalendarNav() {
@@ -819,7 +876,7 @@ function mfgigcal_CalendarNav() {
 	}
 	
 	if ($ytd) {
-		$mfgigcal_nav = "<h2>" . $ytd . " " . __('Events', 'mfgigcal') . "</h2>";
+		$mfgigcal_nav = "<h2>" . $ytd . "</h2>";
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else if ($event_id) {

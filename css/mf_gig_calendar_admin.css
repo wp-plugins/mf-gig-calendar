@@ -31,6 +31,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	width:250px;
 }
 
+.widefat .event_details img {
+	height:auto;
+	width:auto;
+	max-width:150px;
+	max-height:150px;
+	margin:3px;
+}
+
 .widefat .buttons {
 	text-align:right;
 }
@@ -42,6 +50,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 .toplevel_page_mf_gig_calendar .wrap h2, 
 .event-calendar_page_mf_gig_calendar_settings .wrap h2,
 .event-calendar_page_mf_gig_calendar_about .wrap h2 {
-	//background:transparent url(images/icon-calendar.png) no-repeat 0px 7px;
+	//background:transparent url(../images/icon-calendar.png) no-repeat 0px 7px;
 	//padding-left:40px;
+}
+
+#mfgigcal_error_message {
+	color:red;
+	font-weight:bold;
+	display:none;
+}
+
+.wrap .widefat .needsfilled {
+	border:solid 1px red;
 }
