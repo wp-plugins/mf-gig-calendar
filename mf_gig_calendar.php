@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.8
+Version: 0.9.9
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -48,7 +48,18 @@ function mfgigcal_getrows($atts) {
 		'id' => '', 
 		'date' => '',
 		'range' => '',
+		'sort' => '', 
+		'offset' => '0',
+		'limit' => '18576385629384657', 
+		'days' => '',
+		'dayskip' => '',
+		'rss' => '',
+		'link' => 'true', 
+		'title' => 'true'
 	), $atts ) );
+	
+	$sort = strtoupper($sort);
+	if ($sort != 'DESC') { $sort = 'ASC'; } // we only allow ASC (default) and DESC for the sort order
 	
 	$mfgigcal_settings = get_option('mfgigcal_settings');
 	global $wpdb;
@@ -89,20 +100,32 @@ function mfgigcal_getrows($atts) {
 		$end_date = substr($range, strpos($range, ':') + 1);
 		$sql .= "WHERE (start_date >= '" . $start_date . "' AND end_date <= '" . $end_date . "') ";
 	}
-	
+	else if ($days) {
+		$days = $days - 1; // days originally includes today. we only want to know how many future days
+		$end_date = date('Y-m-d', strtotime("+" . $days . "days"));	
+		$sql .= "WHERE (start_date >= '" . $today . "' AND end_date <= '" . $end_date . "') ";
+	}
+	else if ($dayskip) {
+		$end_date = date('Y-m-d', strtotime("+" . $dayskip . "days"));
+		$sql .= "WHERE end_date >= '$end_date' ";
+	}
 	
 	
 	else { // default view displays upcoming events
 		$sql .= "WHERE end_date >= '$today' ";
 	}	
-	$sql .= "ORDER BY start_date ASC";
+	$sql .= "ORDER BY start_date " . $sort;
+	
+	if ($limit && $offset) {
+		$sql .= " LIMIT " . $offset . "," . $limit;
+	}
 	
 	$mfgigcal_events = $wpdb->get_results($sql);
 	
 	$mfgigcal_data = "";
 	
-	if ($mfgigcal_settings['rss'] && empty($atts)) {
-		(get_option('permalink_structure')) ? $feed_link = "/feed/events" : $feed_link = "/?feed=events";
+	if (($mfgigcal_settings['rss'] && empty($atts)) || ($mfgigcal_settings['rss'] && $rss)) {
+		(get_option('permalink_structure')) ? $feed_link = "/feed/mfgigcal" : $feed_link = "/?feed=mfgigcal";
 		$mfgigcal_data .= "<a href=\"$feed_link\" class=\"rss-link\">RSS</a>"; 
 	}
 	
@@ -118,9 +141,11 @@ function mfgigcal_getrows($atts) {
 		$query_prefix = $existing;
 	}
 	
-	if (empty($atts) || $event_id) { // don't show the nav if we're working with shortcode display
+	if (empty($atts) || $event_id || $title == 'true') { // don't show the nav if we're working with shortcode display
 		$mfgigcal_data .= mfgigcal_CalendarNav();
 	}
+	
+	
 	
 	if (empty($mfgigcal_events) && $mfgigcal_settings['no-events'] == "text") {
 		$mfgigcal_data .= "<p>" . $mfgigcal_settings['message'] . "</p>";
@@ -145,23 +170,23 @@ function mfgigcal_getrows($atts) {
 	
 	foreach ($mfgigcal_events as $mfgigcal_event) { 
 	
-		$mfgigcal_data .= "<li class=\"event\"><div class=\"date\">\n";
+		$mfgigcal_data .= "\n<li class=\"event\">\n<div class=\"date\">\n\t";
 		$mfgigcal_data .= mfgigcal_FormatDate($mfgigcal_event->start_date, $mfgigcal_event->end_date);
-		$mfgigcal_data .= "</div>\n";
+		$mfgigcal_data .= "\n</div>\n";
 			
-		$mfgigcal_data .= "<div class=\"info_block\"><h3>";
-		if (!$_GET[event_id]) {
+		$mfgigcal_data .= "<div class=\"info_block\">\n\t<h3>";
+		if (!$_GET[event_id] && $link == 'true') {
 			$mfgigcal_data .= "<a href=\"" . $query_prefix . "event_id=$mfgigcal_event->id\">" . $mfgigcal_event->title . "</a>";
 		}	
 		else {
 			$mfgigcal_data .= $mfgigcal_event->title;
 		}
-		$mfgigcal_data .= "</h3>";
-		$mfgigcal_data .= "<span class=\"time\">" . $mfgigcal_event->time . "</span>";
-		$mfgigcal_data .= $mfgigcal_event->location;
-		$mfgigcal_data .= $mfgigcal_event->details;
+		$mfgigcal_data .= "</h3>\n";
+		$mfgigcal_data .= "\t<span class=\"time\">" . $mfgigcal_event->time . "</span>\n";
+		$mfgigcal_data .= "\t<span class=\"location\">" . $mfgigcal_event->location . "</span>\n";
+		$mfgigcal_data .= "\t<span class=\"details\">" . $mfgigcal_event->details . "</span>\n";
 		
-		$mfgigcal_data .= "</div></li>\n";
+		$mfgigcal_data .= "</div>\n</li>\n";
 	
 	}
 	$mfgigcal_data .= "</ul>";
@@ -218,13 +243,13 @@ load_plugin_textdomain('mfgigcal', false, basename( dirname( __FILE__ ) ) . '/la
 
 add_action('admin_menu', 'mfgigcal_admin_menu');
 function mfgigcal_admin_menu() {
-	$page = add_menu_page( __('Event Calendar', 'mfgigcal'), __('Event Calendar', 'mfgigcal'), 'manage_options', 'mf_gig_calendar', 'mfgigcal_admin');
+	$page = add_menu_page( __('Event Calendar', 'mfgigcal'), __('Event Calendar', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar', 'mfgigcal_admin');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
-	$page = add_submenu_page( 'mf_gig_calendar', __('Event Calendar Settings', 'mfgigcal'), __('Settings', 'mfgigcal'), 'manage_options', 'mf_gig_calendar_settings', 'mfgigcal_settings_page');
+	$page = add_submenu_page( 'mf_gig_calendar', __('Event Calendar Settings', 'mfgigcal'), __('Settings', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_settings', 'mfgigcal_settings_page');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
-	$page = add_submenu_page( 'mf_gig_calendar', __('About MF Gig Calendar', 'mfgigcal'), __('About', 'mfgigcal'), 'manage_options', 'mf_gig_calendar_about', 'mfgigcal_about_page');
+	$page = add_submenu_page( 'mf_gig_calendar', __('About MF Gig Calendar', 'mfgigcal'), __('About', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_about', 'mfgigcal_about_page');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
 	//call register settings function
@@ -308,9 +333,20 @@ function mfgigcal_settings_display_text() {
 
 function mfgigcal_settings_display_rss_field() {
 	$options = get_option('mfgigcal_settings');
+	($options['rss_date_format'] == "") ? $rss_date_format = __('Upcoming Events', 'mfgigcal') : $rss_date_format = $options['upcoming_title']
 	?>
 	<p><input id="rss" name="mfgigcal_settings[rss]" type="checkbox" value="1" <?php checked( '1', $options['rss'] ); ?> />
-	<?php _e('Include an RSS feed link on your event page?', 'mfgigcal'); ?></p>
+	<?php _e('Include an RSS feed link on your event page?', 'mfgigcal'); ?><br>
+	<input id="rss_details" name="mfgigcal_settings[rss_details]" type="checkbox" value="1" <?php checked( '1', $options['rss_details'] ); ?> />
+	<?php _e('Include full event details in your RSS feed?', 'mfgigcal'); ?><br>	
+	</p>
+	<p><?php _e('What is your preferred format to use for dates in your RSS feed?', 'mfgigcal'); ?>
+	<select id ="rss_date_format" name="mfgigcal_settings[rss_date_format]">
+	<option value="mdy" <?php if ($options['rss_date_format'] == "mdy") echo "selected"; ?>><?php echo date_i18n('M j, Y'); ?>  </option>
+	<option value="dmy" <?php if ($options['rss_date_format'] == "dmy") echo "selected"; ?>><?php echo date_i18n('j M, Y'); ?>  </option>
+	</select>
+	<br>	
+	</p>
 	
 	<?php
 }
@@ -333,7 +369,7 @@ function mfgigcal_settings_display_url_field() {
     $siteurl = get_option('siteurl');
 	$options = get_option('mfgigcal_settings');
 	?>
-	<p><?php _e('You can put your event calendar on any Page or Post on your site, once you have it working you can let MF Gig Calendar know where it is by entering a URL of the Page or Post here. MF Gig Calendar will use this URL in the RSS feed and in the widget.', 'mfgigcal'); ?></p>
+	<p><?php _e('You can put your event calendar on any Page or Post on your site. Once you have it working you can let MF Gig Calendar know where it is by entering a URL of the Page or Post here. NOTE: MF Gig Calendar will use this URL in the RSS feed and in the widget.', 'mfgigcal'); ?></p>
 	<p><input type="text" id="calendar_url" name="mfgigcal_settings[calendar_url]" style="width:300px;" value="<?=$options['calendar_url']?>"> <i><?php _e('Example', 'mfgigcal'); ?>: <?=$siteurl?>/events</i></p>
 	<?php
 }
@@ -350,7 +386,7 @@ function mfgigcal_settings_display_upcoming_field() {
 }
 
 function mfgigcal_settings_page () {
-	if (!current_user_can('manage_options'))  {
+	if (!current_user_can('edit_posts'))  {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	}
 	
@@ -403,14 +439,17 @@ function mfgigcal_about_page() {
 	[mfgigcal id=event_id] - <?php _e('display only one specific event'); ?><br>
 	[mfgigcal date=YYYY-MM-DD] - <?php _e('display events that are happening on a particular day'); ?><br>
 	[mfgigcal range=YYYY-MM-DD:YYYY-MM-DD] - <?php _e('display a range of dates (START:END)'); ?><br />
+	[mfgigcal days=#] - <?php _e('how many days of future events (including today) you want to display'); ?><br />
+	[mfgigcal offset=#] - <?php _e('offset your list of upcoming events by a certain number of days'); ?><br />
+	[mfgigcal limit=#] - <?php _e('limit the number of events to display'); ?><br />
+	[mfgigcal title=true|false] - <?php _e('display the title and archive navigation - default is true'); ?><br />
+	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false'); ?><br />
+	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC'); ?><br />
 	</blockquote>
 	
-	<p><?php _e('Note: The the archive navigation will not be displayed.'); ?></p>
-	<br >
+	<br>
 	
 	<h3><?php _e('Note from the Author', 'mfgigcal'); ?></h3>
-	
-	<p>Hey there!</p>
 	
 	<p>Thanks for trying my MF Gig Calendar event plugin. I hope it helps you!</p>
 	
@@ -451,7 +490,8 @@ function mfgigcal_about_page() {
 	
 	<h3>Credits</h3>
 	<p>
-	Polish translation by: Julian Battelli
+	Polish translation by: Julian Battelli<br>
+	Swedish translation by: Marie Brunnberg
 	</p>
 	<?php
 	
@@ -460,7 +500,7 @@ function mfgigcal_about_page() {
 }
 
 function mfgigcal_admin() {
-	if (!current_user_can('manage_options'))  {
+	if (!current_user_can('edit_posts'))  {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	}
 	
@@ -692,12 +732,13 @@ function mfgigcal_list_events() {
 		$mfgigcal_data .= '<p style="text-align:right"><a href="?page=mf_gig_calendar&action=edit" class="button-primary">' . __('Create New Event', 'mfgigcal') . '</a></p>';
 		$mfgigcal_data .= "<table class=\"widefat\" style=\"margin-top:10px;\">";
 		$mfgigcal_data .= "<thead>";
-		$mfgigcal_data .= "<tr><th class=\"event_date\">" . __('Date', 'mfgigcal') . "</th><th class=\"event_location\">" . __('Event', 'mfgigcal') . "</th><th class=\"event_details\" colspan=\"2\">" . __('Event Details', 'mfgigcal') . "</th></tr>";
+		$mfgigcal_data .= "<tr><th>" . __('Event Shortcode', 'mfgigcal') . "</th><th class=\"event_date\">" . __('Date', 'mfgigcal') . "</th><th class=\"event_location\">" . __('Event', 'mfgigcal') . "</th><th class=\"event_details\" colspan=\"2\">" . __('Event Details', 'mfgigcal') . "</th></tr>";
 		$mfgigcal_data .= "</thead>";
 	
 		foreach ($mfgigcal_events as $mfgigcal_event) { 
 		
-			$mfgigcal_data .= "<tr><td class=\"event_date\">";
+			$mfgigcal_data .= "<tr><td style='white-space:nowrap;'>[mfgigcal event_id=$mfgigcal_event->id]</td>";
+			$mfgigcal_data .= "<td class=\"event_date\">";
 			$mfgigcal_data .= mfgigcal_admin_FormatDate($mfgigcal_event->start_date, $mfgigcal_event->end_date) . "<br />";
 			$mfgigcal_data .= $mfgigcal_event->time;
 			$mfgigcal_data .= "</td>";
@@ -828,7 +869,7 @@ function mfgigcal_ExtractDate($date, $format) {
 	return date_i18n($format, $date);
 }
 
-function mfgigcal_CalendarNav() {
+function mfgigcal_CalendarNav($show_title = true) {
 	global $wpdb;
 	$mfgigcal_table = $wpdb->prefix . "mfgigcal";
 	
@@ -867,6 +908,8 @@ function mfgigcal_CalendarNav() {
 		$query_prefix = $existing;
 	}
 	
+	($query_prefix == get_permalink(get_post( $post )->id) . "?") ? $reset_link = get_permalink(get_post( $post )->id) : $reset_link = $query_prefix;
+	
 	$ytd = mfgigcal_Clean($_GET[ytd]);
 	$event_id = mfgigcal_Clean($_GET[event_id]);
 	
@@ -876,16 +919,18 @@ function mfgigcal_CalendarNav() {
 	}
 	
 	if ($ytd) {
-		$mfgigcal_nav = "<h2>" . $ytd . "</h2>";
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
+		if ($show_title) $mfgigcal_nav = "<h2 id=\"cal_title\">" . $ytd . "</h2>";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else if ($event_id) {
-		$mfgigcal_nav = "<h2>" . __('Event Information', 'mfgigcal') . "</h2>";
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $query_prefix . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
+		if ($show_title) $mfgigcal_nav = "<h2 id=\"cal_title\">" . __('Event Information', 'mfgigcal') . "</h2>";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else {
-		($mfgigcal_settings['upcoming_title'] == "") ? $upcoming_title = __('Upcoming Events', 'mfgigcal') : $upcoming_title = $mfgigcal_settings['upcoming_title'];
-		$mfgigcal_nav = "<h2>$upcoming_title</h2>";
+		if ($show_title) {
+			($mfgigcal_settings['upcoming_title'] == "") ? $upcoming_title = __('Upcoming Events', 'mfgigcal') : $upcoming_title = $mfgigcal_settings['upcoming_title'];
+			$mfgigcal_nav = "<h2 id=\"cal_title\">$upcoming_title</h2>";
+		}
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	

@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 3.5.1
-Stable tag: 0.9.8
+Tested up to: 3.5.2
+Stable tag: 0.9.9
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -24,17 +24,13 @@ I'm Matthew Fries (that's where the MF in MF Gig Calendar comes from) and I'm a 
 * a widget to list a few upcoming events in the sidebar
 * an archive to view past events by year
 * supports localization (waiting on translations...)
-* ability to display ranges of dates using variables in the shortcode
+* shortcode variables to customize the output
 
 The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - even in more than one place. Just include the following short code where you want the calendar to appear: 
 
 `[mfgigcal]`
 
-Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.5.1.
-
-= Future Plans = 
-* a template in the options so you can control the HTML output of the calendar info so it appears exactly the way you want?
-* (Other ideas? Please tell me!)
+Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.5.2.
 
 Want to keep in touch? Here are a few options...
 
@@ -95,6 +91,14 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 5. Front end - example of website display
 
 == Changelog ==
+
+**Version 0.9.9**
+
+* Admin editor user permissions relaxed - now any user who can edit posts can access the event calendar tool
+* Cleanup: removed trailing ? on empty query strings
+* Swedish Translation (thanks to Marie Brunnberg)
+* New shortcode attributes added to customize output
+* Shortcut to grab a single event for display
 
 **Version 0.9.8**
 
@@ -173,4 +177,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.8 adds a heap of features and a few fixes.
+Version 0.9.9 adds a few important fixes.

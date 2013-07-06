@@ -46,9 +46,9 @@ CALENDAR OUTPUT FORMAT:
 		</div>
 		<div class="info_block">
 			<h3>[Event Title]</h3>
-			<span class="time"></span>
-			[Event Location]
-			[Event Details]
+			<span class="time">[Event Time]</span>
+			<span class="location">[Event Location]</span>
+			<span class="details">[Event Details]</span>
 		</div>
 	</li>
 
