@@ -8,7 +8,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 0.9.9
+Stable tag: 0.9.9.1
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -91,6 +91,13 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 5. Front end - example of website display
 
 == Changelog ==
+
+
+**Version 0.9.9.1**
+
+* Bug fixes
+* Added default sort order for calendar archive
+* Added the ability to turn off the default link to individual event display
 
 **Version 0.9.9**
 
@@ -177,4 +184,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.9 adds a few important fixes.
+Version 0.9.9.1 adds a few important fixes and a few user requested additions.
