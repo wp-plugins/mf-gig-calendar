@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.9
+Version: 0.9.9.1
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -55,13 +55,18 @@ function mfgigcal_getrows($atts) {
 		'dayskip' => '',
 		'rss' => '',
 		'link' => 'true', 
-		'title' => 'true'
+		'title' => 'false'
 	), $atts ) );
 	
 	$sort = strtoupper($sort);
 	if ($sort != 'DESC') { $sort = 'ASC'; } // we only allow ASC (default) and DESC for the sort order
 	
 	$mfgigcal_settings = get_option('mfgigcal_settings');
+	
+	$archive_sort = $mfgigcal_settings['sort_order'];
+	if ($archive_sort != 'DESC') $archive_sort = 'ASC';
+	
+	
 	global $wpdb;
 	$mfgigcal_table = $wpdb->prefix . "mfgigcal";
 	
@@ -78,9 +83,11 @@ function mfgigcal_getrows($atts) {
 	
 	if ($ytd == date("Y") && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
+		$sort = $archive_sort;
 	}
 	else if ($ytd && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
+		$sort = $archive_sort;
 	}
 	else if ($event_id) {
 		$sql .= "WHERE id = '" . $event_id . "' ";
@@ -141,7 +148,7 @@ function mfgigcal_getrows($atts) {
 		$query_prefix = $existing;
 	}
 	
-	if (empty($atts) || $event_id || $title == 'true') { // don't show the nav if we're working with shortcode display
+	if (empty($atts)) { // don't show the nav if we're working with shortcode display
 		$mfgigcal_data .= mfgigcal_CalendarNav();
 	}
 	
@@ -175,7 +182,7 @@ function mfgigcal_getrows($atts) {
 		$mfgigcal_data .= "\n</div>\n";
 			
 		$mfgigcal_data .= "<div class=\"info_block\">\n\t<h3>";
-		if (!$_GET[event_id] && $link == 'true') {
+		if (!$_GET[event_id] && ( ($link == 'true' && !empty($atts) ) || (!$mfgigcal_settings['event_links'] && empty($atts) ) )) {
 			$mfgigcal_data .= "<a href=\"" . $query_prefix . "event_id=$mfgigcal_event->id\">" . $mfgigcal_event->title . "</a>";
 		}	
 		else {
@@ -308,6 +315,8 @@ function mfgigcal_register_settings() {
 	
 	
 	add_settings_field('upcoming_title', __('Calendar Title', 'mfgigcal'), 'mfgigcal_settings_display_upcoming_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('sort_order', __('Archive Sort Order', 'mfgigcal'), 'mfgigcal_settings_display_sort_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('event_links', __('Individual Events', 'mfgigcal'), 'mfgigcal_settings_display_link_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('display', __('Empty Upcoming Calendar', 'mfgigcal'), 'mfgigcal_settings_display_display_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('calendar_url', __('Calendar URL', 'mfgigcal'), 'mfgigcal_settings_display_url_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('rss', __('RSS Feed', 'mfgigcal'), 'mfgigcal_settings_display_rss_field', 'mfgigcal', 'mfgigcal_settings_display');
@@ -328,17 +337,16 @@ function mfgigcal_settings_display_setup() {
 
 
 function mfgigcal_settings_display_text() {
-	echo "<p>" . __('Once you have events displaying on your site you can customize MF Gig Calendar slightly with the following optional settings.', 'mfgigcal') . "</p>";
+	echo "<p>" . __('Once you have events displaying on your site you can customize the default MF Gig Calendar with the following optional settings.', 'mfgigcal') . "</p>";
 }
 
 function mfgigcal_settings_display_rss_field() {
 	$options = get_option('mfgigcal_settings');
-	($options['rss_date_format'] == "") ? $rss_date_format = __('Upcoming Events', 'mfgigcal') : $rss_date_format = $options['upcoming_title']
 	?>
-	<p><input id="rss" name="mfgigcal_settings[rss]" type="checkbox" value="1" <?php checked( '1', $options['rss'] ); ?> />
-	<?php _e('Include an RSS feed link on your event page?', 'mfgigcal'); ?><br>
-	<input id="rss_details" name="mfgigcal_settings[rss_details]" type="checkbox" value="1" <?php checked( '1', $options['rss_details'] ); ?> />
-	<?php _e('Include full event details in your RSS feed?', 'mfgigcal'); ?><br>	
+	<p><label><input id="rss" name="mfgigcal_settings[rss]" type="checkbox" value="1" <?php checked( '1', $options['rss'] ); ?> />
+	<?php _e('Include an RSS feed link on your event page?', 'mfgigcal'); ?></label><br>
+	<label><input id="rss_details" name="mfgigcal_settings[rss_details]" type="checkbox" value="1" <?php checked( '1', $options['rss_details'] ); ?> />
+	<?php _e('Include full event details in your RSS feed?', 'mfgigcal'); ?></label><br>	
 	</p>
 	<p><?php _e('What is your preferred format to use for dates in your RSS feed?', 'mfgigcal'); ?>
 	<select id ="rss_date_format" name="mfgigcal_settings[rss_date_format]">
@@ -383,6 +391,28 @@ function mfgigcal_settings_display_upcoming_field() {
 	<p><input type="text" id="upcoming_title" name="mfgigcal_settings[upcoming_title]" style="width:300px;" value="<?=$upcoming_title?>"></p>
 	
 	<?php
+}
+
+function mfgigcal_settings_display_sort_field() {
+	$options = get_option('mfgigcal_settings');
+	($options['sort_order'] == "") ? $sort_order = 'ASC' : $sort_order = $options['sort_order']
+	?>
+	<p><?php _e('How do you like want to sort your archive of past events? ', 'mfgigcal'); ?>
+	<select id="sort_order" name="mfgigcal_settings[sort_order]">
+	<option value="ASC" <?php if ($options['sort_order'] == "ASC") echo "selected"; ?>>Ascending  </option>
+	<option value="DESC" <?php if ($options['sort_order'] == "DESC") echo "selected"; ?>>Descending  </option>
+	</select>
+	<br>	
+	</p><?php
+}
+
+function mfgigcal_settings_display_link_field() {
+	$options = get_option('mfgigcal_settings');
+	?>
+	<p><?php _e('By default the title of your event will link to a page displaying only that event. It is a handy way to share individual events. But hey! you may not like it. You can disable the link here.', 'mfgigcal');?></p>
+	<p><label><input id="rss" name="mfgigcal_settings[event_links]" type="checkbox" value="1" <?php checked( '1', $options['event_links'] ); ?> />
+	<?php _e('Do not link my event titles to individual event pages', 'mfgigcal'); ?></label><br>
+	</p><?php
 }
 
 function mfgigcal_settings_page () {
@@ -442,7 +472,6 @@ function mfgigcal_about_page() {
 	[mfgigcal days=#] - <?php _e('how many days of future events (including today) you want to display'); ?><br />
 	[mfgigcal offset=#] - <?php _e('offset your list of upcoming events by a certain number of days'); ?><br />
 	[mfgigcal limit=#] - <?php _e('limit the number of events to display'); ?><br />
-	[mfgigcal title=true|false] - <?php _e('display the title and archive navigation - default is true'); ?><br />
 	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false'); ?><br />
 	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC'); ?><br />
 	</blockquote>
