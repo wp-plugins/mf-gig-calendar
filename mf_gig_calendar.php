@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.9.1
+Version: 0.9.9.2
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -104,13 +104,19 @@ function mfgigcal_getrows($atts) {
 	}
 	else if ($range) {
 		$start_date = substr($range, 0, strpos($range, ':'));
+		if ($start_date == 'today') { $start_date = $today; }
+		if (preg_match("/^[0-9][0-9]-[0-9][0-9]$/", $start_date)) { $start_date = date(Y) . "-" . $start_date;  } // add this year if they didn't include
+		
 		$end_date = substr($range, strpos($range, ':') + 1);
-		$sql .= "WHERE (start_date >= '" . $start_date . "' AND end_date <= '" . $end_date . "') ";
+		if ($end_date == 'today') { $end_date = $today; }
+		if (preg_match("/^[0-9][0-9]-[0-9][0-9]$/", $end_date)) { $end_date = date(Y) . "-" . $end_date;  } // add this year if they didn't include
+		
+		$sql .= "WHERE (end_date >= '" . $start_date . "' AND start_date <= '" . $end_date . "') ";
 	}
 	else if ($days) {
 		$days = $days - 1; // days originally includes today. we only want to know how many future days
 		$end_date = date('Y-m-d', strtotime("+" . $days . "days"));	
-		$sql .= "WHERE (start_date >= '" . $today . "' AND end_date <= '" . $end_date . "') ";
+		$sql .= "WHERE (end_date >= '" . $today . "' AND start_date <= '" . $end_date . "') ";
 	}
 	else if ($dayskip) {
 		$end_date = date('Y-m-d', strtotime("+" . $dayskip . "days"));
@@ -121,11 +127,10 @@ function mfgigcal_getrows($atts) {
 	else { // default view displays upcoming events
 		$sql .= "WHERE end_date >= '$today' ";
 	}	
-	$sql .= "ORDER BY start_date " . $sort;
 	
-	if ($limit && $offset) {
-		$sql .= " LIMIT " . $offset . "," . $limit;
-	}
+	
+	$sql .= "ORDER BY start_date " . $sort;
+	$sql .= " LIMIT " . $limit . " OFFSET " . $offset;
 	
 	$mfgigcal_events = $wpdb->get_results($sql);
 	
@@ -250,13 +255,13 @@ load_plugin_textdomain('mfgigcal', false, basename( dirname( __FILE__ ) ) . '/la
 
 add_action('admin_menu', 'mfgigcal_admin_menu');
 function mfgigcal_admin_menu() {
-	$page = add_menu_page( __('Event Calendar', 'mfgigcal'), __('Event Calendar', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar', 'mfgigcal_admin');
+	$page = add_menu_page( __('MF Gig Calendar', 'mfgigcal'), __('MF Gig Calendar', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar', 'mfgigcal_admin');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
-	$page = add_submenu_page( 'mf_gig_calendar', __('Event Calendar Settings', 'mfgigcal'), __('Settings', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_settings', 'mfgigcal_settings_page');
+	$page = add_submenu_page( 'mf_gig_calendar', __('MF Gig Calendar Settings', 'mfgigcal'), __('Settings', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_settings', 'mfgigcal_settings_page');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
-	$page = add_submenu_page( 'mf_gig_calendar', __('About MF Gig Calendar', 'mfgigcal'), __('About', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_about', 'mfgigcal_about_page');
+	$page = add_submenu_page( 'mf_gig_calendar', __('About MF Gig Calendar', 'mfgigcal'), __('Documentation', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_about', 'mfgigcal_about_page');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
 	//call register settings function
@@ -327,6 +332,7 @@ function mfgigcal_settings_validate($input) {
 }
 
 function mfgigcal_settings_display_setup() {
+
 	echo "<p>" . __('Basic installation is easy. Just place this short code on any Page or Post where you want the event list to appear', 'mfgigcal') . ": </p>
 	
 	<p>[mfgigcal]</p>
@@ -449,6 +455,34 @@ function mfgigcal_about_page() {
 	
 	?>
 	
+	<div style="float:right;margin:0px 0px 15px 30px;padding-left:30px;border-left:solid 1px #ccc;width:35%;">
+	<h3><?php _e('Check Out My Music', 'mfgigcal'); ?></h3>
+	<p><?php _e('I have a few albums of jazz piano music. If you are a music fan I hope you will take a moment and listen!', 'mfgigcal'); ?></p>
+	<p>
+	<a href="http://www.matthewfries.com/music/tri-fi-3/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/postcards/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/tri-fi/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	</p>
+	<h3><?php _e('Donate to Support This Project', 'mfgigcal'); ?></h3>
+	<p><?php _e('Buy me a beer. Help me pay rent. Whatever. Every little bit helps keep this project going and PayPal makes it easy to send your support.', 'mfgigcal'); ?></p>
+	<p>
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+	<input type="hidden" name="cmd" value="_s-xclick">
+	<input type="hidden" name="hosted_button_id" value="APYLZNJSKAZFN">
+	<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+	<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+	</form>
+	</p>
+	<h3><?php _e('...Or Just Say Something Nice', 'mfgigcal'); ?></h3>
+	<p>
+	<a href="http://wordpress.org/support/view/plugin-reviews/mf-gig-calendar" target="_blank"><?php _e('Submit a Review on Wordpress', 'mfgigcal'); ?></a><br>
+	<a href="http://facebook.com/matthewfriesmusic" target="_blank"><?php _e('Like Me On Facebook', 'mfgigcal'); ?></a><br>
+	</p>
+	</div>
+	
+	
 	<h3><?php _e('Basic Usage', 'mfgigcal'); ?></h3>
 	<p><?php _e('Easy! Just place this short code on any Page or Post where you want the event calendar to appear', 'mfgigcal'); ?>: </p>
 	
@@ -466,14 +500,38 @@ function mfgigcal_about_page() {
 	<p><?php _e('You can display more specific event information on any PAGE or POST by including a variables in your short code.', 'mfgigcal'); ?></p>
 	
 	<blockquote>
-	[mfgigcal id=event_id] - <?php _e('display only one specific event'); ?><br>
-	[mfgigcal date=YYYY-MM-DD] - <?php _e('display events that are happening on a particular day'); ?><br>
-	[mfgigcal range=YYYY-MM-DD:YYYY-MM-DD] - <?php _e('display a range of dates (START:END)'); ?><br />
-	[mfgigcal days=#] - <?php _e('how many days of future events (including today) you want to display'); ?><br />
-	[mfgigcal offset=#] - <?php _e('offset your list of upcoming events by a certain number of days'); ?><br />
+	<p>
+	<b><?php _e('SELECT BY EVENT', 'mfgigcal'); ?></b><br>
+	[mfgigcal id=event_id] - <?php _e('display only one specific event', 'mfgigcal'); ?>
+	</p>
+	<p>
+	<b><?php _e('SELECT BY DATE', 'mfgigcal'); ?></b><br>
+	[mfgigcal date=YYYY-MM-DD] - <?php _e('(year-month-day) display events that are happening on a particular date', 'mfgigcal'); ?>
+	</p>
+	<p>
+	<b><?php _e('SELECT BY DATE RANGE', 'mfgigcal'); ?></b><br>
+	[mfgigcal range=START:END] - <?php _e('display event within a particular date range using these accepted date-range formats', 'mfgigcal'); ?>:
+	</p>
+	<p>
+	YYYY-MM-DD - <?php _e('(year-month-day) display specific dates', 'mfgigcal'); ?><br>
+	MM-DD - <?php _e('(month-day) - display specific dates in the current year', 'mfgigcal'); ?><br>
+	today - <?php _e('display specific dates in relation to the current date', 'mfgigcal'); ?><br>
+	</p>
+	<p><?php _e('EXAMPLE: [mfgigcal range=01-01:today] would show a year-to-date list of events', 'mfgigcal'); ?></p>
+	<p>
+	<b><?php _e('LIMIT AND OFFSET BY DATE', 'mfgigcal'); ?></b><br>
+	[mfgigcal days=#] - <?php _e('how many days of future events (including today) you want to display', 'mfgigcal'); ?><br />
+	[mfgigcal offset=#] - <?php _e('offset your list of upcoming events by a certain number of days', 'mfgigcal'); ?>
+	</p>
+	<p>
+	<b><?php _e('LIMIT AND OFFSET BY NUMBER OF EVENTS', 'mfgigcal'); ?></b><br>
 	[mfgigcal limit=#] - <?php _e('limit the number of events to display'); ?><br />
-	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false'); ?><br />
-	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC'); ?><br />
+	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC'); ?>
+	</p>
+	<p>
+	<b>OTHER SETTINGS</b><br>
+	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false'); ?>
+	</p>
 	</blockquote>
 	
 	<br>
@@ -500,14 +558,6 @@ function mfgigcal_about_page() {
 	find <i>something</i> to like about what I play (unless you're one of those people who just hate everything - which would just be a sad, sad existence...).</p>
 
 	<p><a href="http://www.matthewfries.com" target="_blank">www.matthewfries.com</a>&nbsp;&nbsp;&nbsp;<-- lots of jazz music to hear here...</p>
-	<p>
-	
-	<a href="http://www.matthewfries.com/music/tri-fi-3/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/postcards/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/tri-fi/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a>
-	<a href="http://www.matthewfries.com/music/"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a>
-</p>
 
 	<p>Please let me know what you think (of the plugin and the music!) - and if you have any suggestions or find any problems. While I do my best and this plugin is working great for me 
 	and a lot of other people, I obviously can't guarantee your particular installation of Wordpress won't have problems.</p>
