@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.9.2
+Version: 0.9.9.3
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -196,7 +196,7 @@ function mfgigcal_getrows($atts) {
 		$mfgigcal_data .= "</h3>\n";
 		$mfgigcal_data .= "\t<span class=\"time\">" . $mfgigcal_event->time . "</span>\n";
 		$mfgigcal_data .= "\t<span class=\"location\">" . $mfgigcal_event->location . "</span>\n";
-		$mfgigcal_data .= "\t<span class=\"details\">" . $mfgigcal_event->details . "</span>\n";
+		$mfgigcal_data .= "\t<span class=\"details\">" . do_shortcode( $mfgigcal_event->details ) . "</span>\n";
 		
 		$mfgigcal_data .= "</div>\n</li>\n";
 	
@@ -525,12 +525,13 @@ function mfgigcal_about_page() {
 	</p>
 	<p>
 	<b><?php _e('LIMIT AND OFFSET BY NUMBER OF EVENTS', 'mfgigcal'); ?></b><br>
-	[mfgigcal limit=#] - <?php _e('limit the number of events to display'); ?><br />
-	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC'); ?>
+	[mfgigcal limit=#] - <?php _e('limit the number of events to display', 'mfgigcal'); ?><br />
 	</p>
 	<p>
-	<b>OTHER SETTINGS</b><br>
-	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false'); ?>
+	<b><?php _e('OTHER SETTINGS', 'mfgigcal'); ?></b><br>
+	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC', 'mfgigcal'); ?><br>
+	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false', 'mfgigcal'); ?><br>
+	[mfgigcal link=true|false] - <?php _e('make the event title link to a display of only the one event – default is true', 'mfgigcal'); ?><br>
 	</p>
 	</blockquote>
 	
@@ -586,6 +587,28 @@ function mfgigcal_admin() {
 	// is there POST data to deal with?
 	if ($_POST) {
 		mfgigcal_save_record();
+	}
+
+	$today = date('Y-m-d');
+	$expire = "2013-12-09";
+	if ($today <= $expire) {
+		echo '<div class="updated">
+		<h3>SORRY FOR THE INTRUSION, BUT I NEED YOUR HELP WITH MY NEW CD!</h3>
+		<p>I am working on a brand new jazz piano trio album and I am raising money through a 
+		campaign on the <a href="http://kck.st/18v3DmV" target="_blank">Kickstarter Crowd-funding Website</a>. 
+		This is a recording of all original music that I am really excited about. If we can meet our goal we will 
+		be releasing the CD in early 2014. I hope you will take a moment and visit the 
+		Kickstarter page to learn more about the project, and chip in to pre-order a CD if you like what you hear.</p> 
+		
+		<p><a href="http://kck.st/18v3DmV" class="button-primary" target="_blank">LEARN MORE ABOUT THE PROJECT</a></p>
+		<p><b>The drive ends on December 9th, 2013!</b></p>
+		
+		<p>Thank you for using the MF Gig Calendar for your Wordpress events!</p>
+		
+		<p>Warm regards,<br>MF</p>
+		
+		<p>P.S. Don\'t worry! This alert message will disappear when the drive ends...</p>
+		</div>';
 	}
 
 	switch ($_GET[action]) {
@@ -714,22 +737,34 @@ function mfgigcal_edit_event() {
 		$end_date = $mfgigcal_event->end_date;
 	}
 	
+	if ($start_date == "") {
+		$start_date = date('Y-m-d');
+		$end_date = date('Y-m-d');
+	}
+	
 	echo "<h2>" . __('Add/Edit Event', 'mfgigcal') . "</h2>";
 	
 	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
 	if ($_GET[action] == "edit") echo "<input type=\"hidden\" name=\"id\" value=\"$_GET[id]\" />";
 		echo "<table class=\"form-table\"><tr>";
-			echo "<th><label class=\"required\">" . __('Start Date', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ") </label></th>";
-			echo "<td><input type=\"text\" class=\"text datepicker form-required\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> <label><input type=\"checkbox\" id=\"multi\" /> Multiple Day Event</label></td>";
+			/*echo "<th><label class=\"required\">" . __('Start Date', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ") </label></th>";
+			echo "<td><input type=\"hidden\" class=\"text form-required\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> <label><input type=\"checkbox\" id=\"multi\" /> Multiple Day Event</label></td>";
 		echo "</tr>";
 		echo "<tr id=\"end_date_row\">";
 			echo "<th><label>" . __('End Date', 'mfgigcal') . "</label></th>";
-			echo "<td><input type=\"text\" class=\"text datepicker\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" /></td>";
-		echo "</tr>";
+			echo "<td><input type=\"hidden\" class=\"text\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" /></td>";
+		echo "</tr>";*/
+		
+		echo "<input type=\"hidden\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" />
+		<input type=\"hidden\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" />";
+		
+		echo "<tr><th><label class=\"required\">" . __('Date', 'mfgigcal') . " <i>(" . __('required', 'mfgigcal') . ")</i></label></th>
+		<td><div class=\"datepicker\"></div></td></tr>";
+		
 		
 		echo "<tr>";
-			echo "<th><label class=\"required\">" . __('Event Title', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ")</label></th>";
-			echo "<td><input type=\"text\" class=\"text form-required\" style=\"width:350px;\" name=\"title\" id=\"title\" value=\"" . str_replace('"', "&quot;", $mfgigcal_event->title) . "\" /></td>";
+			echo "<th><label class=\"required\">" . __('Event Title', 'mfgigcal') . " <i>(" . __('required', 'mfgigcal') . ")</i></label></th>";
+			echo "<td><input type=\"text\" class=\"text form-required\" style=\"width:400px;font-size:1.5em;\" name=\"title\" id=\"title\" value=\"" . str_replace('"', "&quot;", $mfgigcal_event->title) . "\" /><br>&nbsp;</td>";
 		echo "</tr>";
 		
 		echo "<tr>";
