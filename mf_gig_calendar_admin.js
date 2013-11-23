@@ -1,6 +1,8 @@
 //$().ready(function() {
 jQuery(document).ready(function( $ ) {	
-	$(".datepicker").datepicker({// Show the 'close' and 'today' buttons
+
+/*
+	$(".datepicker").datepicker({ // Show the 'close' and 'today' buttons
 		showButtonPanel: true,
 		closeText: objectL10n.closeText,
 		currentText: objectL10n.currentText,
@@ -44,6 +46,47 @@ jQuery(document).ready(function( $ ) {
 		}
 	});
 	
+	*/
+	
+	$(".datepicker").datepicker({
+		currentText: objectL10n.currentText,
+		monthNames: objectL10n.monthNames,
+		monthNamesShort: objectL10n.monthNamesShort,
+		dayNames: objectL10n.dayNames,
+		dayNamesShort: objectL10n.dayNamesShort,
+		dayNamesMin: objectL10n.dayNamesMin,
+		firstDay: objectL10n.firstDay,
+		isRTL: objectL10n.isRTL,
+		dateFormat: 'yy-mm-dd',
+		defaultDate: $("#start_date").val(),
+		
+			numberOfMonths: 2,
+			beforeShowDay: function(date) {
+				var date1 = $.datepicker.parseDate('yy-mm-dd', $("#start_date").val());
+				var date2 = $.datepicker.parseDate('yy-mm-dd', $("#end_date").val());
+				return [true, date1 && ((date.getTime() == date1.getTime()) || (date2 && date >= date1 && date <= date2)) ? "dp-highlight" : ""];
+			},
+			onSelect: function(dateText, inst) {
+				var date1 = $.datepicker.parseDate('yy-mm-dd', $("#start_date").val());
+				var date2 = $.datepicker.parseDate('yy-mm-dd', $("#end_date").val());
+                var selectedDate = $.datepicker.parseDate('yy-mm-dd', dateText);
+
+                
+                if (!date1 || date2) {
+					$("#start_date").val(dateText);
+					$("#end_date").val("");
+                    $(this).datepicker();
+                } else if( selectedDate < date1 ) {
+                    $("#end_date").val( $("#start_date").val() );
+                    $("#start_date").val( dateText );
+                    $(this).datepicker();
+                } else {
+					$("#end_date").val(dateText);
+                    $(this).datepicker();
+				}
+			}
+		});
+	
 	
 	
 	// form validation
@@ -56,7 +99,7 @@ jQuery(document).ready(function( $ ) {
 		//Validate required fields
 		for (i=0;i<required.length;i++) {
 			var input = $('#'+required[i]);
-			if ((input.val() == "") || (input.val() == emptyerror)) {
+			if (input.val() == "") {
 				input.addClass("needsfilled");
 				$(".required").css({'color' : 'red', 'font-weight' : 'bold'});
 				errornotice.fadeIn(750);

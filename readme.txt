@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 3.5.2
-Stable tag: 0.9.9.2
+Tested up to: 3.7.1
+Stable tag: 0.9.9.3
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -93,6 +93,11 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 == Changelog ==
 
 
+**Version 0.9.9.3**
+
+* New date selection process
+* Some short codes now allowed in event descriptions
+* Bug fixes
 
 **Version 0.9.9.2**
 
@@ -191,4 +196,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.9.1 adds a few important fixes and a few user requested additions.
+Version 0.9.9.3 adds a few important fixes and a few user requested additions.

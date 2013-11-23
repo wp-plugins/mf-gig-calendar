@@ -1,4 +1,4 @@
-/* 
+/*
 
 Copyright (C) 2012 Matthew Fries
 
@@ -16,131 +16,59 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-=======================================
-Calendar Layout
-=======================================
-
-CALENDAR OUTPUT FORMAT: 
-
-<ul id="cal">
-
-	<li class="event">
-		<div class="date">
-		
-			<!-- ONLY OUTPUT FOR MULTI-DAY EVENTS -->		
-			<div class="start-date">
-				<div class="weekday"></div>
-				<div class="day"></div>
-				<div class="month"></div>
-				<div class="year"></div>
-			</div>
-			<!-- ONLY OUTPUT FOR MULTI-DAY EVENTS -->
-			
-			<div class="end-date">
-				<div class="weekday"></div>
-				<div class="day"></div>
-				<div class="month"></div>
-				<div class="year"></div>
-			</div>
-		</div>
-		<div class="info_block">
-			<h3>[Event Title]</h3>
-			<span class="time">[Event Time]</span>
-			<span class="location">[Event Location]</span>
-			<span class="details">[Event Details]</span>
-		</div>
-	</li>
-
-</ul>
-
-=======================================
 */
 
-a.rss-link {
-	display:block;
-	height:16px;
-	float:right;
-	background:transparent url(../images/icon-rss.png) right top no-repeat;
-	padding-right:20px;
-	line-height:16px;
-}
-
-#cal_nav {
-	font-size:.9em;
-	margin-bottom: 1.5em;
-}
-
-ul#cal {
-	list-style: none;
-	margin: 1em 0 1.5em 0;
-	padding: 0;
-}
-
-
-#cal li.event {
-	clear: both;
-	padding-top: 1.5em;
-}
-
-#cal .date {
-	white-space:nowrap;
-	float:left;
-	padding-bottom:1.5em;
-}
-
-#cal .start-date {
-	float:left;
+.widefat .event_date {
 	text-align:right;
-	width:3em;
-	padding-right: .5em;
-	background:transparent url(../images/hyphen.png) right 2em no-repeat;
-	overflow:hidden;
 }
 
-#cal .end-date {
+.widefat .event_location {
 	text-align:left;
-	width:3em;
-	margin-left:3.9em;
-	overflow:hidden;
+	width:200px;
 }
 
-#cal .year {
-	font-size:.8em;
-	line-height:1em;
-	letter-spacing: .1em;
+.widefat .event_details {
+	width:250px;
 }
 
-#cal .month {
-	text-transform:uppercase;
-	font-size:.9em;
-	line-height:1em;
-	padding:.4em 0 .5em 0;
+.widefat .event_details img {
+	height:auto;
+	width:auto;
+	max-width:150px;
+	max-height:150px;
+	margin:3px;
 }
 
-#cal .day {
-	font-size:1.6em;
+.widefat .buttons {
+	text-align:right;
+}
+
+.widefat .event_title {
+	font-weight: bold;
+}
+
+.toplevel_page_mf_gig_calendar .wrap h2, 
+.event-calendar_page_mf_gig_calendar_settings .wrap h2,
+.event-calendar_page_mf_gig_calendar_about .wrap h2 {
+	//background:transparent url(../images/icon-calendar.png) no-repeat 0px 7px;
+	//padding-left:40px;
+}
+
+#mfgigcal_error_message {
+	color:red;
 	font-weight:bold;
-	line-height:1em;
-	margin-bottom:-.2em;
+	display:none;
 }
 
-#cal .info_block {
-	padding:0 0 1em 0;
-	margin:0 0 0 7.5em;
+.wrap .widefat .needsfilled {
+	border:solid 1px red;
 }
 
-#cal .info_block h3 {
-	clear:none;
-	margin-top:0;
-	padding-top:0;
+.dp-highlight .ui-state-default {
+	background: steelblue;
+	color: #FFF;
 }
 
-#cal .weekday {
-	font-size:.9em;
-	text-transform:uppercase;
-}
-
-#cal .time {
-	font-weight:bold;
+.ui-datepicker-year {
+	display:inline;
 }
