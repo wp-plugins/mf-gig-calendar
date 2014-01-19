@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 3.7.1
-Stable tag: 0.9.9.4
+Tested up to: 3.8
+Stable tag: 0.9.9.5
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -30,7 +30,7 @@ The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - 
 
 `[mfgigcal]`
 
-Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.5.2.
+Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.8.
 
 Want to keep in touch? Here are a few options...
 
@@ -92,6 +92,12 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+
+**Version 0.9.9.5**
+
+* Date selector fixes (I hope!!)
+* Spanish translation by Andrew Kurtis (WebHostingHub.com)
+* Ability to set the default title for individ event display
 
 **Version 0.9.9.4**
 

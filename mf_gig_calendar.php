@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.9.4
+Version: 0.9.9.5
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -320,6 +320,7 @@ function mfgigcal_register_settings() {
 	
 	
 	add_settings_field('upcoming_title', __('Calendar Title', 'mfgigcal'), 'mfgigcal_settings_display_upcoming_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('event_title', __('Individual Event Title', 'mfgigcal'), 'mfgigcal_settings_display_eventtitle_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('sort_order', __('Archive Sort Order', 'mfgigcal'), 'mfgigcal_settings_display_sort_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('event_links', __('Individual Events', 'mfgigcal'), 'mfgigcal_settings_display_link_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('display', __('Empty Upcoming Calendar', 'mfgigcal'), 'mfgigcal_settings_display_display_field', 'mfgigcal', 'mfgigcal_settings_display');
@@ -395,6 +396,17 @@ function mfgigcal_settings_display_upcoming_field() {
 	?>
 	<p><?php _e('What title do you want to use in your event calendar when it is displaying upcoming events? Feel free to be creative!', 'mfgigcal'); ?></p>
 	<p><input type="text" id="upcoming_title" name="mfgigcal_settings[upcoming_title]" style="width:300px;" value="<?=$upcoming_title?>"></p>
+	
+	<?php
+}
+
+function mfgigcal_settings_display_eventtitle_field() {
+    $siteurl = get_option('siteurl');
+	$options = get_option('mfgigcal_settings');
+	($options['event_title'] == "") ? $event_title = __('Event Information', 'mfgigcal') : $event_title = $options['event_title']
+	?>
+	<p><?php _e('What title do you want to use in your event calendar when it is displaying an individual event?', 'mfgigcal'); ?></p>
+	<p><input type="text" id="event_title" name="mfgigcal_settings[event_title]" style="width:300px;" value="<?=$event_title?>"></p>
 	
 	<?php
 }
@@ -571,6 +583,7 @@ function mfgigcal_about_page() {
 	<h3>Credits</h3>
 	<p>
 	Polish translation by: Julian Battelli<br>
+	Spanish translation by: Andrew Kurtis (<a href="http://www.webhostinghub.com" target="_blank">WebHostingHub</a>)<br>
 	Swedish translation by: Marie Brunnberg
 	</p>
 	<?php
@@ -746,7 +759,7 @@ function mfgigcal_edit_event() {
 	
 	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
 	if ($_GET[action] == "edit") echo "<input type=\"hidden\" name=\"id\" value=\"$_GET[id]\" />";
-		echo "<table class=\"form-table\"><tr>";
+		echo "<table class=\"form-table\">";
 			/*echo "<th><label class=\"required\">" . __('Start Date', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ") </label></th>";
 			echo "<td><input type=\"hidden\" class=\"text form-required\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> <label><input type=\"checkbox\" id=\"multi\" /> Multiple Day Event</label></td>";
 		echo "</tr>";
@@ -755,11 +768,14 @@ function mfgigcal_edit_event() {
 			echo "<td><input type=\"hidden\" class=\"text\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" /></td>";
 		echo "</tr>";*/
 		
-		echo "<input type=\"hidden\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" />
-		<input type=\"hidden\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" />";
-		
 		echo "<tr><th><label class=\"required\">" . __('Date', 'mfgigcal') . " <i>(" . __('required', 'mfgigcal') . ")</i></label></th>
-		<td><div class=\"datepicker\"></div></td></tr>";
+		<td><div class=\"mfgig-datepicker\"></div>
+		
+		<div style=\"padding:1em;font-size:.8em;\">FROM <input type=\"text\" class=\"text\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> TO 
+		<input type=\"text\" class=\"text\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" /></div>
+		
+		
+		</td></tr>";
 		
 		
 		echo "<tr>";
@@ -1037,7 +1053,10 @@ function mfgigcal_CalendarNav($show_title = true) {
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else if ($event_id) {
-		if ($show_title) $mfgigcal_nav = "<h2 id=\"cal_title\">" . __('Event Information', 'mfgigcal') . "</h2>";
+		if ($show_title) {
+			($mfgigcal_settings['event_title'] == "") ? $event_title = __('Event Information', 'mfgigcal') : $event_title = $mfgigcal_settings['event_title'];
+			$mfgigcal_nav = "<h2 id=\"cal_title\">$event_title</h2>";
+		}
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else {

@@ -48,7 +48,7 @@ jQuery(document).ready(function( $ ) {
 	
 	*/
 	
-	$(".datepicker").datepicker({
+	$(".mfgig-datepicker").datepicker({
 		currentText: objectL10n.currentText,
 		monthNames: objectL10n.monthNames,
 		monthNamesShort: objectL10n.monthNamesShort,
@@ -60,33 +60,38 @@ jQuery(document).ready(function( $ ) {
 		dateFormat: 'yy-mm-dd',
 		defaultDate: $("#start_date").val(),
 		
-			numberOfMonths: 2,
-			beforeShowDay: function(date) {
-				var date1 = $.datepicker.parseDate('yy-mm-dd', $("#start_date").val());
-				var date2 = $.datepicker.parseDate('yy-mm-dd', $("#end_date").val());
-				return [true, date1 && ((date.getTime() == date1.getTime()) || (date2 && date >= date1 && date <= date2)) ? "dp-highlight" : ""];
-			},
-			onSelect: function(dateText, inst) {
-				var date1 = $.datepicker.parseDate('yy-mm-dd', $("#start_date").val());
-				var date2 = $.datepicker.parseDate('yy-mm-dd', $("#end_date").val());
-                var selectedDate = $.datepicker.parseDate('yy-mm-dd', dateText);
+		numberOfMonths: 2,
+		beforeShowDay: function(date) {
+			var date1 = $.datepicker.parseDate('yy-mm-dd', $("#start_date").val());
+			var date2 = $.datepicker.parseDate('yy-mm-dd', $("#end_date").val());
+			return [true, date1 && ((date.getTime() == date1.getTime()) || (date2 && date >= date1 && date <= date2)) ? "dp-highlight" : ""];
+		},
+		onSelect: function(dateText, inst) {
+			var date1 = $.datepicker.parseDate('yy-mm-dd', $("#start_date").val());
+			var date2 = $.datepicker.parseDate('yy-mm-dd', $("#end_date").val());
+			var selectedDate = $.datepicker.parseDate('yy-mm-dd', dateText);
 
-                
-                if (!date1 || date2) {
-					$("#start_date").val(dateText);
-					$("#end_date").val("");
-                    $(this).datepicker();
-                } else if( selectedDate < date1 ) {
-                    $("#end_date").val( $("#start_date").val() );
-                    $("#start_date").val( dateText );
-                    $(this).datepicker();
-                } else {
-					$("#end_date").val(dateText);
-                    $(this).datepicker();
-				}
+			
+			if (!date1 || date2) {
+				$("#start_date").val(dateText);
+				$("#end_date").val("");
+				$(this).datepicker();
+			} else if( selectedDate < date1 ) {
+				$("#end_date").val( $("#start_date").val() );
+				$("#start_date").val( dateText );
+				$(this).datepicker();
+			} else {
+				$("#end_date").val(dateText);
+				$(this).datepicker();
 			}
-		});
+		}
+	});
 	
+	
+	$("#start_date, #end_date").blur(function() {
+		$(".mfgig-datepicker").datepicker( "setDate", $("#start_date").val() );
+		$(".mfgig-datepicker").datepicker( "setDate", $("#end_date").val() );
+	});
 	
 	
 	// form validation
