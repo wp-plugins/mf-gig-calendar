@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: 0.9.9.5
+Tested up to: 4.1
+Stable tag: 1.0
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -30,7 +30,7 @@ The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - 
 
 `[mfgigcal]`
 
-Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 3.8.
+Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 4.1.
 
 Want to keep in touch? Here are a few options...
 
@@ -73,7 +73,7 @@ Most of the look of the calendar is controlled by your theme. A very small style
 = Why do you ask me to enter a URL for my calendar in the settings? Shouldn't that just happen automatically? =
 The MF Gig Calendar widget and the RSS feed use the URL you enter in Settings to link to the calendar on your site. You can put the calendar in any Page or Post on your site - even in more than one place - so this URL is the place you want people to go to see what's going on. It's completely optional. The plugin will work fine without it.
 
-= My calendar is blowing up the design on my page exteng past the margins! The fonts don't match the fonts on my site! What is going on? =
+= My calendar is blowing up the design on my page extending past the margins! The fonts don't match the fonts on my site! What is going on? =
 The first thing to check is that you don't have `<pre>` tags around your shortcode. Sometimes formatting comes along when you cut and paste into the Wordpress editor. If you flip to the "Text" tab in the editor you might see something like this: `<pre>[mfgigcal]</pre>` Get those `<pre>` tags out of there!
 
 = Why doesn't MF Gig Calendar...(insert your cool idea here)...? =
@@ -92,12 +92,19 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+**Version 1.0**
+
+* UTF8 support (Note: this requires altering the mfgigcal table in your database, so please make sure you backup your data first)
+* French translation by Tanguy Kerfriden
+* Ability to hide details from event lists
+* Fixed bug with uneditable events in admin area
+* Other upgrades
 
 **Version 0.9.9.5**
 
 * Date selector fixes (I hope!!)
 * Spanish translation by Andrew Kurtis (WebHostingHub.com)
-* Ability to set the default title for individ event display
+* Ability to set the default title for individual event display
 
 **Version 0.9.9.4**
 
@@ -206,4 +213,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 0.9.9.3 adds a few important fixes and a few user requested additions.
+Version 1.0 adds a few important fixes and a few user requested additions.

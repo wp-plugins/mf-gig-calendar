@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 0.9.9.5
+Version: 1.0
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -44,27 +44,38 @@ function mfgigcal_func( $atts ){
 add_shortcode( 'mfgigcal', 'mfgigcal_func' );
 
 function mfgigcal_getrows($atts) {
-	extract( shortcode_atts( array( 
-		'id' => '', 
+	// get the defaults
+	$mfgigcal_settings = get_option('mfgigcal_settings');
+	($mfgigcal_settings['sort_order'] == "DESC") ? $sort_order = "DESC" : $sort_order = "ASC";
+	($mfgigcal_settings['event_links']) ? $event_links = false : $event_links = true; // remove links to individual events?
+	($mfgigcal_settings['event_details']) ? $event_details = false : $event_details = true; // hide event details?
+	
+	// clean the variables
+	$ytd = mfgigcal_Clean($_GET[ytd]);
+	$event_id = mfgigcal_Clean($_GET[event_id]);
+	
+	// overrides from shortcode attributes
+    extract( shortcode_atts( array( 
+		'id' => $event_id, 
 		'date' => '',
 		'range' => '',
-		'sort' => '', 
 		'offset' => '0',
 		'limit' => '18576385629384657', 
 		'days' => '',
-		'dayskip' => '',
 		'rss' => '',
-		'link' => 'true', 
-		'title' => 'false'
-	), $atts ) );
+		'sort' => $sort_order, 
+		'title' => 'false',
+		'link' => $event_links, 
+		'details' => $event_details
+	), $atts, 'mfgigcal') );
+
+    $title = filter_var( $title, FILTER_VALIDATE_BOOLEAN );
+    $link = filter_var( $link, FILTER_VALIDATE_BOOLEAN );
+    $details = filter_var( $details, FILTER_VALIDATE_BOOLEAN );
+	
 	
 	$sort = strtoupper($sort);
 	if ($sort != 'DESC') { $sort = 'ASC'; } // we only allow ASC (default) and DESC for the sort order
-	
-	$mfgigcal_settings = get_option('mfgigcal_settings');
-	
-	$archive_sort = $mfgigcal_settings['sort_order'];
-	if ($archive_sort != 'DESC') $archive_sort = 'ASC';
 	
 	
 	global $wpdb;
@@ -77,25 +88,17 @@ function mfgigcal_getrows($atts) {
 	
 	$sql = "SELECT * FROM $mfgigcal_table ";
 	
-	// clean the variables
-	$ytd = mfgigcal_Clean($_GET[ytd]);
-	$event_id = mfgigcal_Clean($_GET[event_id]);
-	
-	if ($ytd == date("Y") && empty($atts)) {
+	/*if ($ytd == date("Y") && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
-		$sort = $archive_sort;
 	}
-	else if ($ytd && empty($atts)) {
+	else */ if ($ytd && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
-		$sort = $archive_sort;
 	}
-	else if ($event_id) {
-		$sql .= "WHERE id = '" . $event_id . "' ";
-	}
-	
 	
 	
 	// handle the shortcode variables
+	
+	// choose which events to display
 	else if ($id) {
 		$sql .= "WHERE id = '" . $id . "' ";
 	}
@@ -118,12 +121,6 @@ function mfgigcal_getrows($atts) {
 		$end_date = date('Y-m-d', strtotime("+" . $days . "days"));	
 		$sql .= "WHERE (end_date >= '" . $today . "' AND start_date <= '" . $end_date . "') ";
 	}
-	else if ($dayskip) {
-		$end_date = date('Y-m-d', strtotime("+" . $dayskip . "days"));
-		$sql .= "WHERE end_date >= '$end_date' ";
-	}
-	
-	
 	else { // default view displays upcoming events
 		$sql .= "WHERE end_date >= '$today' ";
 	}	
@@ -178,7 +175,9 @@ function mfgigcal_getrows($atts) {
 		}
 	}
 	
-	$mfgigcal_data .= "<ul id=\"cal\">\n";
+	($event_id) ? $list_type = "mfgigcal_single" : $list_type = "mfgigcal_list";
+	
+	$mfgigcal_data .= "\n\n<ul id=\"cal\" class=\"mfgigcal " . $list_type . "\">\n";
 	
 	foreach ($mfgigcal_events as $mfgigcal_event) { 
 	
@@ -187,7 +186,7 @@ function mfgigcal_getrows($atts) {
 		$mfgigcal_data .= "\n</div>\n";
 			
 		$mfgigcal_data .= "<div class=\"info_block\">\n\t<h3>";
-		if (!$_GET[event_id] && ( ($link == 'true' && !empty($atts) ) || (!$mfgigcal_settings['event_links'] && empty($atts) ) )) {
+		if (!$id && $link) {
 			$mfgigcal_data .= "<a href=\"" . $query_prefix . "event_id=$mfgigcal_event->id\">" . $mfgigcal_event->title . "</a>";
 		}	
 		else {
@@ -196,8 +195,9 @@ function mfgigcal_getrows($atts) {
 		$mfgigcal_data .= "</h3>\n";
 		$mfgigcal_data .= "\t<span class=\"time\">" . $mfgigcal_event->time . "</span>\n";
 		$mfgigcal_data .= "\t<span class=\"location\">" . $mfgigcal_event->location . "</span>\n";
-		$mfgigcal_data .= "\t<span class=\"details\">" . do_shortcode( $mfgigcal_event->details ) . "</span>\n";
-		
+		if ($details || $id) {
+			$mfgigcal_data .= "\t<span class=\"details\">" . do_shortcode( $mfgigcal_event->details ) . "</span>\n";
+		}
 		$mfgigcal_data .= "</div>\n</li>\n";
 	
 	}
@@ -321,8 +321,9 @@ function mfgigcal_register_settings() {
 	
 	add_settings_field('upcoming_title', __('Calendar Title', 'mfgigcal'), 'mfgigcal_settings_display_upcoming_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('event_title', __('Individual Event Title', 'mfgigcal'), 'mfgigcal_settings_display_eventtitle_field', 'mfgigcal', 'mfgigcal_settings_display');
-	add_settings_field('sort_order', __('Archive Sort Order', 'mfgigcal'), 'mfgigcal_settings_display_sort_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('sort_order', __('Sort Order', 'mfgigcal'), 'mfgigcal_settings_display_sort_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('event_links', __('Individual Events', 'mfgigcal'), 'mfgigcal_settings_display_link_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('event_details', __('Event Details Display', 'mfgigcal'), 'mfgigcal_settings_display_details_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('display', __('Empty Upcoming Calendar', 'mfgigcal'), 'mfgigcal_settings_display_display_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('calendar_url', __('Calendar URL', 'mfgigcal'), 'mfgigcal_settings_display_url_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('rss', __('RSS Feed', 'mfgigcal'), 'mfgigcal_settings_display_rss_field', 'mfgigcal', 'mfgigcal_settings_display');
@@ -338,7 +339,7 @@ function mfgigcal_settings_display_setup() {
 	
 	<p>[mfgigcal]</p>
 	
-	<p>" . __('Enter some events and you\'ll be up and running') . ": <a href=\"admin.php?page=mf_gig_calendar&action=edit\">" . __('Create Event', 'mfgigcal') . "</a><br>
+	<p>" . __('Enter some events and you\'ll be up and running', 'mfgigcal') . ": <a href=\"admin.php?page=mf_gig_calendar&action=edit\">" . __('Create Event', 'mfgigcal') . "</a><br>
 	" . __('Learn more about how it works on the About Page', 'mfgigcal') . ": <a href=\"admin.php?page=mf_gig_calendar_about\">" . __('About MF Gig Calendar', 'mfgigcal') . "</a><br><br></p>";
 }
 
@@ -373,7 +374,7 @@ function mfgigcal_settings_display_display_field() {
 	<p><?php _e('It happens. Sometimes there just isn\'t much going on (or there\'s too much going on and you forgot to update your calendar on your website). 
 	What do you want your event calendar to do in those rare
 	moments when you don\'t have any upcoming events to display in your calendar?', 'mfgigcal'); ?></p>
-	<p><label><input type="radio" name="mfgigcal_settings[no-events]" value="archive" checked> <?php _e('Display the archive for the current year', 'mfgigcal'); ?>. <i>(<?php _e('default', 'mfgigcal'); ?>)</i></label><br />
+	<p><label><input type="radio" name="mfgigcal_settings[no-events]" value="archive" checked> <?php _e('Display the events for the current year', 'mfgigcal'); ?>. <i>(<?php _e('default', 'mfgigcal'); ?>)</i></label><br />
 	<label><input type="radio" name="mfgigcal_settings[no-events]" value="text" <?php checked( 'text', $options['no-events'] ); ?>> <?php _e('Display the following message:', 'mfgigcal'); ?></label></p>
 	<p><textarea id="message" name="mfgigcal_settings[message]" style="width:300px;"><?=$options['message']?></textarea></p>
 	
@@ -400,6 +401,15 @@ function mfgigcal_settings_display_upcoming_field() {
 	<?php
 }
 
+function mfgigcal_settings_display_details_field() {
+	$options = get_option('mfgigcal_settings');
+	?>
+	<p><?php _e('If you prefer a tidier list of events, you can hide your event details from the event list.', 'mfgigcal');?></p>
+	<p><label><input id="event_details" name="mfgigcal_settings[event_details]" type="checkbox" value="1" <?php checked( '1', $options['event_details'] ); ?> />
+	<?php _e('Hide my event details', 'mfgigcal'); ?></label><br>
+	</p><?php
+}
+
 function mfgigcal_settings_display_eventtitle_field() {
     $siteurl = get_option('siteurl');
 	$options = get_option('mfgigcal_settings');
@@ -415,7 +425,7 @@ function mfgigcal_settings_display_sort_field() {
 	$options = get_option('mfgigcal_settings');
 	($options['sort_order'] == "") ? $sort_order = 'ASC' : $sort_order = $options['sort_order']
 	?>
-	<p><?php _e('How do you like want to sort your archive of past events? ', 'mfgigcal'); ?>
+	<p><?php _e('How do you like want to sort your list of events? ', 'mfgigcal'); ?>
 	<select id="sort_order" name="mfgigcal_settings[sort_order]">
 	<option value="ASC" <?php if ($options['sort_order'] == "ASC") echo "selected"; ?>>Ascending  </option>
 	<option value="DESC" <?php if ($options['sort_order'] == "DESC") echo "selected"; ?>>Descending  </option>
@@ -428,7 +438,7 @@ function mfgigcal_settings_display_link_field() {
 	$options = get_option('mfgigcal_settings');
 	?>
 	<p><?php _e('By default the title of your event will link to a page displaying only that event. It is a handy way to share individual events. But hey! you may not like it. You can disable the link here.', 'mfgigcal');?></p>
-	<p><label><input id="rss" name="mfgigcal_settings[event_links]" type="checkbox" value="1" <?php checked( '1', $options['event_links'] ); ?> />
+	<p><label><input id="event_links" name="mfgigcal_settings[event_links]" type="checkbox" value="1" <?php checked( '1', $options['event_links'] ); ?> />
 	<?php _e('Do not link my event titles to individual event pages', 'mfgigcal'); ?></label><br>
 	</p><?php
 }
@@ -461,6 +471,7 @@ function mfgigcal_settings_page () {
 function mfgigcal_about_page() {
 
     $siteurl = get_option('siteurl');
+    $mfgigcal_url = plugins_url('mf-gig-calendar');
     
 	echo '<div class="wrap">';
 	echo '<h2>' . __('About MF Gig Calendar', 'mfgigcal') . '</h2>';
@@ -471,11 +482,12 @@ function mfgigcal_about_page() {
 	<h3><?php _e('Check Out My Music', 'mfgigcal'); ?></h3>
 	<p><?php _e('I have a few albums of jazz piano music. If you are a music fan I hope you will take a moment and listen!', 'mfgigcal'); ?></p>
 	<p>
-	<a href="http://www.matthewfries.com/music/tri-fi-3/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/postcards/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/tri-fi/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/" target="_blank"><img src="<?=$siteurl?>/wp-content/plugins/mf-gig-calendar/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/staring-into-the-sun/" target="_blank" title="TRI-FI: Staring into the Sun **** (4 stars) Downbeat"><img src="<?=$mfgigcal_url?>/images/cd_Staring-into-the-Sun.png" alt="TRI-FI Staring into the Sun" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/tri-fi-3/" target="_blank" title="TRI-FI: 3"><img src="<?=$mfgigcal_url?>/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/" target="_blank" title="A TRI-FI Christmas"><img src="<?=$mfgigcal_url?>/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/postcards/" target="_blank" title="TRI-FI: Postcards"><img src="<?=$mfgigcal_url?>/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/tri-fi/" target="_blank" title="TRI-FI"><img src="<?=$mfgigcal_url?>/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="http://www.matthewfries.com/music/" target="_blank" title="Matthew Fries: Song for Today"><img src="<?=$mfgigcal_url?>/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a> 
 	</p>
 	<h3><?php _e('Donate to Support This Project', 'mfgigcal'); ?></h3>
 	<p><?php _e('Buy me a beer. Help me pay rent. Whatever. Every little bit helps keep this project going and PayPal makes it easy to send your support.', 'mfgigcal'); ?></p>
@@ -491,6 +503,7 @@ function mfgigcal_about_page() {
 	<p>
 	<a href="http://wordpress.org/support/view/plugin-reviews/mf-gig-calendar" target="_blank"><?php _e('Submit a Review on Wordpress', 'mfgigcal'); ?></a><br>
 	<a href="http://facebook.com/matthewfriesmusic" target="_blank"><?php _e('Like Me On Facebook', 'mfgigcal'); ?></a><br>
+	<a href="http://twitter.com/mfjazz" target="_blank"><?php _e('Follow Me On Twitter', 'mfgigcal'); ?></a><br>
 	</p>
 	</div>
 	
@@ -543,7 +556,11 @@ function mfgigcal_about_page() {
 	<b><?php _e('OTHER SETTINGS', 'mfgigcal'); ?></b><br>
 	[mfgigcal sort=ASC|DESC] - <?php _e('set the order in which events are displayed - ascending (ASC) or descending (DESC) - default is ASC', 'mfgigcal'); ?><br>
 	[mfgigcal rss=true|false] - <?php _e('display the link for the RSS feed - default is false', 'mfgigcal'); ?><br>
-	[mfgigcal link=true|false] - <?php _e('make the event title link to a display of only the one event – default is true', 'mfgigcal'); ?><br>
+	[mfgigcal link=true|false] - <?php _e('make the event title link to a display of only the one event – default is based on your Event Calendar Settings', 'mfgigcal'); ?><br>
+	[mfgigcal details=true|false] - <?php _e('display the details of the events in the event list – default is based on your Event Calendar Settings', 'mfgigcal'); ?><br>
+	</p>
+	<p>
+	<a href="admin.php?page=mf_gig_calendar_settings"><?php _e('Event Calendar Settings', 'mfgigcal'); ?></a>
 	</p>
 	</blockquote>
 	
@@ -582,9 +599,10 @@ function mfgigcal_about_page() {
 	
 	<h3>Credits</h3>
 	<p>
-	Polish translation by: Julian Battelli<br>
-	Spanish translation by: Andrew Kurtis (<a href="http://www.webhostinghub.com" target="_blank">WebHostingHub</a>)<br>
-	Swedish translation by: Marie Brunnberg
+	Polish translation by: <b>Julian Battelli</b><br>
+	Spanish translation by: <b>Andrew Kurtis</b> (<a href="http://www.webhostinghub.com" target="_blank">WebHostingHub</a>)<br>
+	Swedish translation by: <b>Marie Brunnberg</b><br>
+	French translation by: <b>Tanguy Kerfriden</b><br>
 	</p>
 	<?php
 	
@@ -600,28 +618,6 @@ function mfgigcal_admin() {
 	// is there POST data to deal with?
 	if ($_POST) {
 		mfgigcal_save_record();
-	}
-
-	$today = date('Y-m-d');
-	$expire = "2013-12-09";
-	if ($today <= $expire) {
-		echo '<div class="updated">
-		<h3>SORRY FOR THE INTRUSION, BUT I NEED YOUR HELP WITH MY NEW CD!</h3>
-		<p>I am working on a brand new jazz piano trio album and I am raising money through a 
-		campaign on the <a href="http://kck.st/18v3DmV" target="_blank">Kickstarter Crowd-funding Website</a>. 
-		This is a recording of all original music that I am really excited about. If we can meet our goal we will 
-		be releasing the CD in early 2014. I hope you will take a moment and visit the 
-		Kickstarter page to learn more about the project, and chip in to pre-order a CD if you like what you hear.</p> 
-		
-		<p><a href="http://kck.st/18v3DmV" class="button-primary" target="_blank">LEARN MORE ABOUT THE PROJECT</a></p>
-		<p><b>The drive ends on December 9th, 2013!</b></p>
-		
-		<p>Thank you for using the MF Gig Calendar for your Wordpress events!</p>
-		
-		<p>Warm regards,<br>MF</p>
-		
-		<p>P.S. Don\'t worry! This alert message will disappear when the drive ends...</p>
-		</div>';
 	}
 
 	switch ($_GET[action]) {
@@ -741,6 +737,8 @@ function mfgigcal_edit_event() {
 			
 	$mfgigcal_event = $wpdb->get_row($sql);
 	
+	$ytd = mfgigcal_Clean($_GET[ytd]);
+	
 	if ($_GET[action] == "copy") {
 		$start_date = date('Y-m-d');
 		$end_date = date('Y-m-d');
@@ -759,19 +757,14 @@ function mfgigcal_edit_event() {
 	
 	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
 	if ($_GET[action] == "edit") echo "<input type=\"hidden\" name=\"id\" value=\"$_GET[id]\" />";
-		echo "<table class=\"form-table\">";
-			/*echo "<th><label class=\"required\">" . __('Start Date', 'mfgigcal') . " (" . __('required', 'mfgigcal') . ") </label></th>";
-			echo "<td><input type=\"hidden\" class=\"text form-required\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> <label><input type=\"checkbox\" id=\"multi\" /> Multiple Day Event</label></td>";
-		echo "</tr>";
-		echo "<tr id=\"end_date_row\">";
-			echo "<th><label>" . __('End Date', 'mfgigcal') . "</label></th>";
-			echo "<td><input type=\"hidden\" class=\"text\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" /></td>";
-		echo "</tr>";*/
+		echo "
+		<input type=\"hidden\" name=\"ytd\" value=\"$ytd\">
+		<table class=\"form-table\">
 		
-		echo "<tr><th><label class=\"required\">" . __('Date', 'mfgigcal') . " <i>(" . __('required', 'mfgigcal') . ")</i></label></th>
+		<tr><th><label class=\"required\">" . __('Date', 'mfgigcal') . " <i>(" . __('required', 'mfgigcal') . ")</i></label></th>
 		<td><div class=\"mfgig-datepicker\"></div>
 		
-		<div style=\"padding:1em;font-size:.8em;\">FROM <input type=\"text\" class=\"text\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> TO 
+		<div style=\"padding:1em;font-size:.8em;\">" . __('FROM', 'mfgigcal') . " <input type=\"text\" class=\"text\" name=\"start_date\" id=\"start_date\" value=\"$start_date\" /> " . __('TO', 'mfgigcal') . " 
 		<input type=\"text\" class=\"text\" name=\"end_date\" id=\"end_date\" value=\"$end_date\" /></div>
 		
 		
@@ -828,7 +821,7 @@ function mfgigcal_edit_event() {
 		
 	echo "</table>";
     
-    echo '<p class="submit"><input type="submit" class="button-primary" name="save" value="' . __('Save Event', 'mfgigcal') . '" id="submitbutton"> <a href="?page=mf_gig_calendar" class="button-secondary">' . __('Cancel', 'mfgigcal') . '</a>';
+    echo '<p class="submit"><input type="submit" class="button-primary" name="save" value="' . __('Save Event', 'mfgigcal') . '" id="submitbutton"> <a href="?page=mf_gig_calendar&ytd=' . $ytd . '" class="button-secondary">' . __('Cancel', 'mfgigcal') . '</a>';
 	echo '&nbsp;&nbsp;<span id="mfgigcal_error_message">' . __('Please fill in all the required information to save your event.', 'mfgigcal') . '</span></p></form>';
 }
 
@@ -839,14 +832,15 @@ function mfgigcal_list_events() {
 	// get the dates
 	$today = date("Y-m-d");
 	
-	$ytd = mfgigcal_Clean($_GET[ytd]);
+	$ytd = mfgigcal_Clean($_GET['ytd']);
+	if ($_POST['ytd']) { $ytd = mfgigcal_Clean($_POST['ytd']); }
 	
 	$sql = "SELECT * FROM $mfgigcal_table ";
 	
-	if ($ytd == date("Y")) {
+	/*if ($ytd == date("Y")) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
 	}
-	else if ($ytd) {
+	else */ if ($ytd) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
 	else {
@@ -867,7 +861,7 @@ function mfgigcal_list_events() {
 	
 		foreach ($mfgigcal_events as $mfgigcal_event) { 
 		
-			$mfgigcal_data .= "<tr><td style='white-space:nowrap;'>[mfgigcal event_id=$mfgigcal_event->id]</td>";
+			$mfgigcal_data .= "<tr><td style='white-space:nowrap;'>[mfgigcal id=$mfgigcal_event->id]</td>";
 			$mfgigcal_data .= "<td class=\"event_date\">";
 			$mfgigcal_data .= mfgigcal_admin_FormatDate($mfgigcal_event->start_date, $mfgigcal_event->end_date) . "<br />";
 			$mfgigcal_data .= $mfgigcal_event->time;
@@ -876,7 +870,7 @@ function mfgigcal_list_events() {
 			$mfgigcal_data .= "<td class=\"event_details\">" . mfgigcal_admin_PrintTruncated(100, $mfgigcal_event->details) . "</td>";
 			
 			$mfgigcal_data .= "<td class=\"buttons\" style=\"white-space:nowrap;\">";
-			$mfgigcal_data .= "<a href=\"?page=mf_gig_calendar&id=$mfgigcal_event->id&action=edit\" class=\"button-secondary\" title=\"" . __('Edit this event', 'mfgigcal') . "\">" . __('Edit', 'mfgigcal') . "</a> ";
+			$mfgigcal_data .= "<a href=\"?page=mf_gig_calendar&id=$mfgigcal_event->id&action=edit&ytd=$ytd\" class=\"button-secondary\" title=\"" . __('Edit this event', 'mfgigcal') . "\">" . __('Edit', 'mfgigcal') . "</a> ";
 			$mfgigcal_data .= "<a href=\"?page=mf_gig_calendar&id=$mfgigcal_event->id&action=copy\" class=\"button-secondary\" title=\"" . __('Create a new event based on this event', 'mfgigcal') . "\">" . __('Duplicate', 'mfgigcal') . "</a> ";
 			$mfgigcal_data .= "<a href=\"#\" onClick=\"mfgigcal_DeleteEvent($mfgigcal_event->id);return false;\" class=\"button-secondary\" title=\"" . __('Delete this event', 'mfgigcal') . "\">" . __('Delete', 'mfgigcal') . "</a>";
 			$mfgigcal_data .= "</td></tr>";
@@ -897,6 +891,7 @@ function mfgigcal_list_events() {
 	}
 	
 	$mfgigcal_data .= "</table>";
+
 	return $mfgigcal_data;
 }
 
@@ -1040,8 +1035,9 @@ function mfgigcal_CalendarNav($show_title = true) {
 	
 	($query_prefix == get_permalink(get_post( $post )->id) . "?") ? $reset_link = get_permalink(get_post( $post )->id) : $reset_link = $query_prefix;
 	
-	$ytd = mfgigcal_Clean($_GET[ytd]);
-	$event_id = mfgigcal_Clean($_GET[event_id]);
+	$ytd = mfgigcal_Clean($_GET['ytd']);
+	if ($_POST['ytd']) { $ytd = mfgigcal_Clean($_POST['ytd']); }
+	$event_id = mfgigcal_Clean($_GET['event_id']);
 	
 	$mfgigcal_settings = get_option('mfgigcal_settings');
 	if ($mfgigcal_settings['always_use_url'] && $mfgigcal_settings['calendar_url'] && !is_admin()) {
@@ -1050,21 +1046,21 @@ function mfgigcal_CalendarNav($show_title = true) {
 	
 	if ($ytd) {
 		if ($show_title) $mfgigcal_nav = "<h2 id=\"cal_title\">" . $ytd . "</h2>";
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Years', 'mfgigcal') . ": ";
 	}
 	else if ($event_id) {
 		if ($show_title) {
 			($mfgigcal_settings['event_title'] == "") ? $event_title = __('Event Information', 'mfgigcal') : $event_title = $mfgigcal_settings['event_title'];
 			$mfgigcal_nav = "<h2 id=\"cal_title\">$event_title</h2>";
 		}
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Years', 'mfgigcal') . ": ";
 	}
 	else {
 		if ($show_title) {
 			($mfgigcal_settings['upcoming_title'] == "") ? $upcoming_title = __('Upcoming Events', 'mfgigcal') : $upcoming_title = $mfgigcal_settings['upcoming_title'];
 			$mfgigcal_nav = "<h2 id=\"cal_title\">$upcoming_title</h2>";
 		}
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Archive', 'mfgigcal') . ": ";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Years', 'mfgigcal') . ": ";
 	}
 	
 	for ($i=$last_year;$i>=$first_year;$i--) {
@@ -1077,18 +1073,19 @@ function mfgigcal_CalendarNav($show_title = true) {
 
 // a function I found on StackOverflow to truncate HTML...
 
-function mfgigcal_admin_PrintTruncated($maxLength, $html) {
+function mfgigcal_admin_PrintTruncated($maxLength, $input_html) {
     $printedLength = 0;
     $position = 0;
     $tags = array();
 	
 	$mfgigcal_html;
+	$input_html = strip_tags($input_html, "<img><b><i><br><br />");
 
-    while ($printedLength < $maxLength && preg_match('{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;}', $html, $match, PREG_OFFSET_CAPTURE, $position)) {
+    while ($printedLength < $maxLength && preg_match('{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;}', $input_html, $match, PREG_OFFSET_CAPTURE, $position)) {
         list($tag, $tagPosition) = $match[0];
 
         // Print text leading up to the tag.
-        $str = substr($html, $position, $tagPosition - $position);
+        $str = substr($input_html, $position, $tagPosition - $position);
         if ($printedLength + strlen($str) > $maxLength) {
             $mfgigcal_html .= substr($str, 0, $maxLength - $printedLength);
             $printedLength = $maxLength;
@@ -1111,7 +1108,7 @@ function mfgigcal_admin_PrintTruncated($maxLength, $html) {
                 // This is a closing tag.
 
                 $openingTag = array_pop($tags);
-                assert($openingTag == $tagName); // check that tags are properly nested.
+                //assert($openingTag == $tagName); // check that tags are properly nested.
 
                 $mfgigcal_html .= $tag;
             }
@@ -1131,11 +1128,11 @@ function mfgigcal_admin_PrintTruncated($maxLength, $html) {
     }
 
     // Print any remaining text.
-    if ($printedLength < $maxLength && $position < strlen($html)) {
-        $mfgigcal_html .= substr($html, $position, $maxLength - $printedLength);
+    if ($printedLength < $maxLength && $position < strlen($input_html)) {
+        $mfgigcal_html .= substr($input_html, $position, $maxLength - $printedLength);
     }
     
-    if ($maxLength < strlen($html)) { 
+    if ($maxLength < strlen($input_html)) { 
     	$mfgigcal_html .= "...";
     }
 
@@ -1165,14 +1162,14 @@ function mfgigcal_Clean($var) {
 // ACTIVATION - create the database table to store the information
 
 global $mfgigcal_db_version;
-$mfgigcal_db_version = "1.1";
+$mfgigcal_db_version = "2.0";
 
 function mfgigcal_install() {
 	global $wpdb;
 	global $mfgigcal_db_version;
-
+	
 	$table_name = $wpdb->prefix . "mfgigcal";
-      
+    
 	$sql = "CREATE TABLE " . $table_name . " (
 		id int(11) NOT NULL AUTO_INCREMENT,
 		pub_date datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -1183,7 +1180,7 @@ function mfgigcal_install() {
 		location text,
 		details text,
 		PRIMARY KEY  (id)
-	);";
+	) CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
@@ -1198,11 +1195,91 @@ register_activation_hook(__FILE__,'mfgigcal_install');
 // UPDATE DB 
 function mfgigcal_update_db_check() {
     global $mfgigcal_db_version;
-    if (get_site_option('mfgigcal_db_version') != $mfgigcal_db_version) {
-        mfgigcal_install();
+    if (get_site_option('mfgigcal_db_version') < $mfgigcal_db_version) {
+        if(get_site_option('mfgigcal_db_version') < 2.0) {
+        	mfgigcal_update_db();
+        }
 		update_option( "mfgigcal_db_version", $mfgigcal_db_version);
     }
 }
 add_action('plugins_loaded', 'mfgigcal_update_db_check');
+
+
+function mfgigcal_update_db() {
+
+	// Convert from latin1_swedish_ci to utf8_general_ci
+	$convert_fields_collate_from = 'latin1_swedish_ci';
+	$convert_fields_collate_to = 'utf8_general_ci';
+	$convert_tables_character_set_to = 'utf8';
+	$show_debug_messages = false;
+	global $wpdb;
+	$wpdb->show_errors();
+	
+	$table = $wpdb->prefix . 'mfgigcal';
+	$indicies = $wpdb->get_results(  "SHOW INDEX FROM `$table`", ARRAY_A );
+	$results = $wpdb->get_results( "SHOW FULL COLUMNS FROM `$table`" , ARRAY_A );
+	foreach($results as $result){
+		if($show_debug_messages)echo "Checking field ".$result['Field'] ." with collat: ".$result['Collation']."\n";
+		if(isset($result['Field']) && $result['Field'] && isset($result['Collation']) && $result['Collation'] == $convert_fields_collate_from){
+			if($show_debug_messages)echo "Table: $table - Converting field " .$result['Field'] ." - " .$result['Type']." - from $convert_fields_collate_from to $convert_fields_collate_to \n";
+			// found a field to convert. check if there's an index on this field.
+			// we have to remove index before converting field to binary.
+			$is_there_an_index = false;
+			foreach($indicies as $index){
+				if ( isset($index['Column_name']) && $index['Column_name'] == $result['Field']){
+					// there's an index on this column! store it for adding later on.
+					$is_there_an_index = $index;
+					$wpdb->query( $wpdb->prepare( "ALTER TABLE `%s` DROP INDEX %s", $table, $index['Key_name']) );
+					if($show_debug_messages)echo "Dropped index ".$index['Key_name']." before converting field.. \n";
+					break;
+				}
+			}
+			$set = false;
+
+			if ( preg_match( "/^varchar\((\d+)\)$/i", $result['Type'], $mat ) ) {
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` VARBINARY({$mat[1]})" );
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` VARCHAR({$mat[1]}) CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+				$set = true;
+			} else if ( !strcasecmp( $result['Type'], "CHAR" ) ) {
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` BINARY(1)" );
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` VARCHAR(1) CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+				$set = true;
+			} else if ( !strcasecmp( $result['Type'], "TINYTEXT" ) ) {
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` TINYBLOB" );
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` TINYTEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+				$set = true;
+			} else if ( !strcasecmp( $result['Type'], "MEDIUMTEXT" ) ) {
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` MEDIUMBLOB" );
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` MEDIUMTEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+				$set = true;
+			} else if ( !strcasecmp( $result['Type'], "LONGTEXT" ) ) {
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` LONGBLOB" );
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` LONGTEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+				$set = true;
+			} else if ( !strcasecmp( $result['Type'], "TEXT" ) ) {
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` BLOB" );
+				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` TEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+				$set = true;
+			}else{
+				if($show_debug_messages)echo "Failed to change field - unsupported type: ".$result['Type']."\n";
+			}
+			if($set){
+				if($show_debug_messages)echo "Altered field success! \n";
+			}
+			if($is_there_an_index !== false){
+				// add the index back.
+				if ( !$is_there_an_index["Non_unique"] ) {
+					$wpdb->query( "CREATE UNIQUE INDEX `{$is_there_an_index['Key_name']}` ON `{$table}` ({$is_there_an_index['Column_name']})", $is_there_an_index['Key_name'], $table, $is_there_an_index['Column_name'] );
+				} else {
+					$wpdb->query( "CREATE UNIQUE INDEX `{$is_there_an_index['Key_name']}` ON `{$table}` ({$is_there_an_index['Column_name']})", $is_there_an_index['Key_name'], $table, $is_there_an_index['Column_name'] );
+				}
+			}
+		}
+		// set default collate
+		$wpdb->query( "ALTER TABLE `{$table}` DEFAULT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
+		if($show_debug_messages)echo "Finished with table $table \n";
+	}
+	$wpdb->hide_errors();
+}
 
 ?>

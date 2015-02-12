@@ -34,9 +34,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 .widefat .event_details img {
 	height:auto;
 	width:auto;
-	max-width:150px;
-	max-height:150px;
-	margin:3px;
+	max-width:120px;
+	max-height:120px;
+	margin:5px 10px;
 }
 
 .widefat .buttons {
