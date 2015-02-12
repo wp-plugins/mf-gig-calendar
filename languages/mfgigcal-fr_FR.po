@@ -1,0 +1,521 @@
+# Copyright (C) 2013 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version: MF Gig\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/mf-gig-calendar\n"
+"POT-Creation-Date: 2013-11-28 16:19:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-12-07 19:57+0100\n"
+"Last-Translator: \n"
+"Language-Team: T. Kerfriden\n"
+"X-Generator: Poedit 1.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr\n"
+
+#: mf_gig_calendar.php:258
+msgid "MF Gig Calendar"
+msgstr "Calendrier MF Gig"
+
+#: mf_gig_calendar.php:261 mf_gig_calendar.php:436
+msgid "MF Gig Calendar Settings"
+msgstr "Paramètres"
+
+#: mf_gig_calendar.php:261
+msgid "Settings"
+msgstr "Paramétrage"
+
+#: mf_gig_calendar.php:264 mf_gig_calendar.php:341 mf_gig_calendar.php:454
+msgid "About MF Gig Calendar"
+msgstr "A propos du calendrier"
+
+#: mf_gig_calendar.php:264
+msgid "Documentation"
+msgstr "Documentation"
+
+#: mf_gig_calendar.php:291
+msgid "Done"
+msgstr "Terminé"
+
+#: mf_gig_calendar.php:292
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: mf_gig_calendar.php:295
+msgid "Show a different month"
+msgstr "Afficher un autre mois"
+
+#: mf_gig_calendar.php:316 mf_gig_calendar.php:486
+msgid "Basic Usage"
+msgstr "Usage de base"
+
+#: mf_gig_calendar.php:319
+msgid "Oh Make My Events Behave - Optional Settings"
+msgstr "Paramètres optionnels"
+
+#: mf_gig_calendar.php:322
+msgid "Calendar Title"
+msgstr "Nom du calendrier"
+
+#: mf_gig_calendar.php:323
+msgid "Archive Sort Order"
+msgstr "Ordre de tri des archives"
+
+#: mf_gig_calendar.php:324
+msgid "Individual Events"
+msgstr "Evènements individuels"
+
+#: mf_gig_calendar.php:325
+msgid "Empty Upcoming Calendar"
+msgstr "Aucun évènement à venir"
+
+#: mf_gig_calendar.php:326
+msgid "Calendar URL"
+msgstr "Lien du calendrier"
+
+#: mf_gig_calendar.php:327
+msgid "RSS Feed"
+msgstr "Lien RSS"
+
+#: mf_gig_calendar.php:336
+msgid ""
+"Basic installation is easy. Just place this short code on any Page or Post "
+"where you want the event list to appear"
+msgstr ""
+"L'installation est simple. Placez ce code dans n'importe quelle page ou "
+"article où vous voulez faire apparaître la liste d'évènements"
+
+#: mf_gig_calendar.php:340
+msgid "Enter some events and you'll be up and running"
+msgstr "Créez quelques évènements et vous serez prêts à y aller "
+
+#: mf_gig_calendar.php:340
+msgid "Create Event"
+msgstr "Créer un évènement"
+
+#: mf_gig_calendar.php:341
+msgid "Learn more about how it works on the About Page"
+msgstr "En apprendre davantage "
+
+#: mf_gig_calendar.php:346
+msgid ""
+"Once you have events displaying on your site you can customize the default "
+"MF Gig Calendar with the following optional settings."
+msgstr ""
+"Une fois les évènements affichés sur le site, vous pouvez personnaliser le "
+"calendrier avec les paramètres optionnels suivants"
+
+#: mf_gig_calendar.php:353
+msgid "Include an RSS feed link on your event page?"
+msgstr "Ajouter un lien RSS sur la page des évènements ?"
+
+#: mf_gig_calendar.php:355
+msgid "Include full event details in your RSS feed?"
+msgstr "Afficher tous les détails dans le RSS ?"
+
+#: mf_gig_calendar.php:357
+msgid "What is your preferred format to use for dates in your RSS feed?"
+msgstr "Comment voulez-vous afficher la date dans le RSS ?"
+
+#: mf_gig_calendar.php:372
+msgid ""
+"It happens. Sometimes there just isn't much going on (or there's too much "
+"going on and you forgot to update your calendar on your website). \n"
+"\tWhat do you want your event calendar to do in those rare\n"
+"\tmoments when you don't have any upcoming events to display in your "
+"calendar?"
+msgstr ""
+"C'est parfois le cas. Il arrive qu'il n'y ait pas grand chose en cours ou "
+"que vous n'ayez pas mis le calendrier à jour. Que faire dans ces moments là ?"
+
+#: mf_gig_calendar.php:375
+msgid "Display the archive for the current year"
+msgstr "Afficher les évènements de l'année en cours"
+
+#: mf_gig_calendar.php:375
+msgid "default"
+msgstr "Défaut"
+
+#: mf_gig_calendar.php:376
+msgid "Display the following message:"
+msgstr "Afficher le message suivant"
+
+#: mf_gig_calendar.php:386
+msgid ""
+"You can put your event calendar on any Page or Post on your site. Once you "
+"have it working you can let MF Gig Calendar know where it is by entering a "
+"URL of the Page or Post here. NOTE: MF Gig Calendar will use this URL in the "
+"RSS feed and in the widget."
+msgstr ""
+"Ajoutez le calendrier sur n'importe quelle page ou article. Cela fait, tapez "
+"l'adresse correspondante ici. Note : cette adresse sera utilisée dans le RSS "
+"et le widget"
+
+#: mf_gig_calendar.php:387
+msgid "Example"
+msgstr "Exemple"
+
+#: mf_gig_calendar.php:394 mf_gig_calendar.php:1045
+msgid "Upcoming Events"
+msgstr "Evènements à venir"
+
+#: mf_gig_calendar.php:396
+msgid ""
+"What title do you want to use in your event calendar when it is displaying "
+"upcoming events? Feel free to be creative!"
+msgstr ""
+"Quel nom voulez vous utiliser dans le calendrier pour afficher les "
+"évènements à venir ? Soyez imaginatifs !"
+
+#: mf_gig_calendar.php:406
+msgid "How do you like want to sort your archive of past events? "
+msgstr "Comment voulez-vous trier les évènements passés ?"
+
+#: mf_gig_calendar.php:418
+msgid ""
+"By default the title of your event will link to a page displaying only that "
+"event. It is a handy way to share individual events. But hey! you may not "
+"like it. You can disable the link here."
+msgstr ""
+"Par défaut, le nom de l'évènement sert de lien vers une page n'affichant que "
+"ce dernier afin de le partager facilement. Vous pouvez malgré tout "
+"désactiver cette fonction ici"
+
+#: mf_gig_calendar.php:420
+msgid "Do not link my event titles to individual event pages"
+msgstr "Ne pas créer de lien vers les pages d'évènements particuliers"
+
+#: mf_gig_calendar.php:426 mf_gig_calendar.php:584
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Vous n'avez l'autorisation d'accéder à cette page."
+
+#: mf_gig_calendar.php:431
+msgid "Settings saved."
+msgstr "Paramètres enregistrés"
+
+#: mf_gig_calendar.php:442
+msgid "Save Changes"
+msgstr "Enregistrer les changements"
+
+#: mf_gig_calendar.php:459
+msgid "Check Out My Music"
+msgstr "Ecoutez ma musique"
+
+#: mf_gig_calendar.php:460
+msgid ""
+"I have a few albums of jazz piano music. If you are a music fan I hope you "
+"will take a moment and listen!"
+msgstr ""
+"J'ai enregistré quelques albums de jazz. Si vous êtes un fan de musique, "
+"j'espère que prendrez un moment pour écouter !"
+
+#: mf_gig_calendar.php:468
+msgid "Donate to Support This Project"
+msgstr "Faites un don pour aider au développement de ce projet"
+
+#: mf_gig_calendar.php:469
+msgid ""
+"Buy me a beer. Help me pay rent. Whatever. Every little bit helps keep this "
+"project going and PayPal makes it easy to send your support."
+msgstr ""
+"Payez moi une bière. Aidez moi à payer le loyer. Qu'importe. Tout don aide "
+"ce projet à survivre et Paypal est une méthode simple de l'envoyer "
+
+#: mf_gig_calendar.php:478
+msgid "...Or Just Say Something Nice"
+msgstr "Ou bien dites quelque chose de sympa"
+
+#: mf_gig_calendar.php:480
+msgid "Submit a Review on Wordpress"
+msgstr "Que pensez-vous de Wordpress ?"
+
+#: mf_gig_calendar.php:481
+msgid "Like Me On Facebook"
+msgstr "Aimez ma page sur Facebook"
+
+#: mf_gig_calendar.php:487
+msgid ""
+"Easy! Just place this short code on any Page or Post where you want the "
+"event calendar to appear"
+msgstr ""
+"C'est facile ! Placez ce code sur n'importe quelle page ou article où vous "
+"avez besoin de voir le calendrier"
+
+#: mf_gig_calendar.php:491
+msgid "That's it! Well, that and adding some events of course..."
+msgstr "Voilà ! Bien entendu, il vous faut encore créer des évènements"
+
+#: mf_gig_calendar.php:493 mf_gig_calendar.php:846 mf_gig_calendar.php:873
+msgid "Create New Event"
+msgstr "Créer un nouvel évènement"
+
+#: mf_gig_calendar.php:495
+msgid ""
+"The plugin includes a handy widget you can place in your sidebar to show "
+"upcoming events. Just drag it into your sidebar to display a list of a few "
+"upcoming events."
+msgstr ""
+"Cette extension inclut un widget que vous pouvez utiliser dans la barre "
+"latérale pour afficher les futurs évènements. Glissez le dedans et c'est "
+"tout !"
+
+#: mf_gig_calendar.php:496
+msgid ""
+"Be sure to also check out the Event Calendar Settings to get MF Gig Calendar "
+"behaving just the way you want."
+msgstr ""
+"Vérifiez aussi les paramètres pour vous assurer que le calendrier se "
+"comporte comme vous le voulez "
+
+#: mf_gig_calendar.php:496
+msgid "Event Calendar Settings"
+msgstr "Paramétres du calendrier"
+
+#: mf_gig_calendar.php:498
+msgid "Advanced Usage"
+msgstr "Usage avancé"
+
+#: mf_gig_calendar.php:500
+msgid ""
+"You can display more specific event information on any PAGE or POST by "
+"including a variables in your short code."
+msgstr ""
+"Il vous est possible d'ajouter des variables dans le code [mfgigcal] pour "
+"afficher plus d'informations"
+
+#: mf_gig_calendar.php:504
+msgid "SELECT BY EVENT"
+msgstr "Sélectionner par évènement"
+
+#: mf_gig_calendar.php:505
+msgid "display only one specific event"
+msgstr "Afficher un seul évènement"
+
+#: mf_gig_calendar.php:508
+msgid "SELECT BY DATE"
+msgstr "Sélectionner par date"
+
+#: mf_gig_calendar.php:509
+msgid "(year-month-day) display events that are happening on a particular date"
+msgstr "Affiche les évènements sur une date précise"
+
+#: mf_gig_calendar.php:512
+msgid "SELECT BY DATE RANGE"
+msgstr "Sélectionner par date"
+
+#: mf_gig_calendar.php:513
+msgid ""
+"display event within a particular date range using these accepted date-range "
+"formats"
+msgstr "Afficher dans une fourchette de date en utilisant un de ces formats "
+
+#: mf_gig_calendar.php:516
+msgid "(year-month-day) display specific dates"
+msgstr "Afficher des dates précises"
+
+#: mf_gig_calendar.php:517
+msgid "(month-day) - display specific dates in the current year"
+msgstr "Afficher des dates précises de l'année en cours"
+
+#: mf_gig_calendar.php:518
+msgid "display specific dates in relation to the current date"
+msgstr "Afficher les évènements du jour"
+
+#: mf_gig_calendar.php:520
+msgid ""
+"EXAMPLE: [mfgigcal range=01-01:today] would show a year-to-date list of "
+"events"
+msgstr ""
+"Exemple : [mfgigcal range=01-01:today] affiche les évènements de l'année "
+"jusqu'à aujourd'hui"
+
+#: mf_gig_calendar.php:522
+msgid "LIMIT AND OFFSET BY DATE"
+msgstr "Limite et décalage par date"
+
+#: mf_gig_calendar.php:523
+msgid "how many days of future events (including today) you want to display"
+msgstr "Choix du nombre de jours (y compris aujourd'hui) à afficher"
+
+#: mf_gig_calendar.php:524
+msgid "offset your list of upcoming events by a certain number of days"
+msgstr "Décale la liste d'évènements à venir d'un certain nombre de jours"
+
+#: mf_gig_calendar.php:527
+msgid "LIMIT AND OFFSET BY NUMBER OF EVENTS"
+msgstr "Limite l'affichage des évènements"
+
+#: mf_gig_calendar.php:528
+msgid "limit the number of events to display"
+msgstr "Réduit le nombre d'évènements à afficher"
+
+#: mf_gig_calendar.php:531
+msgid "OTHER SETTINGS"
+msgstr "Autres paramètres"
+
+#: mf_gig_calendar.php:532
+msgid ""
+"set the order in which events are displayed - ascending (ASC) or descending "
+"(DESC) - default is ASC"
+msgstr ""
+"Définit dans quel sens seront affichés les évènements. ASCendant (par "
+"défaut) ou DESCendant"
+
+#: mf_gig_calendar.php:533
+msgid "display the link for the RSS feed - default is false"
+msgstr "Affiche le lien RSS ('non' par défaut)"
+
+#: mf_gig_calendar.php:534
+msgid ""
+"make the event title link to a display of only the one event – default is "
+"true"
+msgstr "Le nom de l'évènement est un lien vers celui-ci (oui par défaut)"
+
+#: mf_gig_calendar.php:540
+msgid "Note from the Author"
+msgstr "Note de l'auteur"
+
+#: mf_gig_calendar.php:661
+msgid "Oops! Required information was not provided. Event could not be saved."
+msgstr ""
+"Oups ! Vous n'avez pas donné toutes les informations requises. L'évènement "
+"n'a pas été sauvegardé"
+
+#: mf_gig_calendar.php:745
+msgid "Add/Edit Event"
+msgstr "Ajouter / modifier un évènement"
+
+#: mf_gig_calendar.php:761 mf_gig_calendar.php:849 mf_gig_calendar.php:876
+msgid "Date"
+msgstr "Date"
+
+#: mf_gig_calendar.php:761 mf_gig_calendar.php:766
+msgid "required"
+msgstr "Info nécessaire"
+
+#: mf_gig_calendar.php:766
+msgid "Event Title"
+msgstr "Nom de l'évènement"
+
+#: mf_gig_calendar.php:771
+msgid "Event Time"
+msgstr "Heure de l'évènement"
+
+#: mf_gig_calendar.php:776
+msgid "Event Location"
+msgstr "Lieu de l'évènement"
+
+#: mf_gig_calendar.php:795 mf_gig_calendar.php:849 mf_gig_calendar.php:876
+msgid "Event Details"
+msgstr "Détails de l'évènement"
+
+#: mf_gig_calendar.php:815
+msgid "Save Event"
+msgstr "Enregistrer l'évènement"
+
+#: mf_gig_calendar.php:815
+msgid "Cancel"
+msgstr "Annuler"
+
+#: mf_gig_calendar.php:816
+msgid "Please fill in all the required information to save your event."
+msgstr ""
+"Merci de donner toutes les infos requises pour enregistrer votre évènement"
+
+#: mf_gig_calendar.php:849
+msgid "Event Shortcode"
+msgstr "Shortcode de l'évènement"
+
+#: mf_gig_calendar.php:849 mf_gig_calendar.php:876
+msgid "Event"
+msgstr "Evènement"
+
+#: mf_gig_calendar.php:863
+msgid "Edit this event"
+msgstr "Modifier cet évènement"
+
+#: mf_gig_calendar.php:863
+msgid "Edit"
+msgstr "Modifier"
+
+#: mf_gig_calendar.php:864
+msgid "Create a new event based on this event"
+msgstr "Créer un nouvel évènement basé sur celui-ci"
+
+#: mf_gig_calendar.php:864
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+#: mf_gig_calendar.php:865
+msgid "Delete this event"
+msgstr "Détruire cet évènement"
+
+#: mf_gig_calendar.php:865
+msgid "Delete"
+msgstr "Détruire"
+
+#: mf_gig_calendar.php:879
+msgid "No events found in this range."
+msgstr "Pas d'évènement trouvé"
+
+#: mf_gig_calendar.php:1037 mf_gig_calendar.php:1041 mf_gig_calendar.php:1048
+msgid "Upcoming"
+msgstr "Prochainement"
+
+#: mf_gig_calendar.php:1037 mf_gig_calendar.php:1041 mf_gig_calendar.php:1048
+msgid "Archive"
+msgstr "Archive "
+
+#: mf_gig_calendar.php:1040
+msgid "Event Information"
+msgstr "Information sur l'évènement"
+
+#: mf_gig_calendar_widget.php:26
+msgid "MF Gig Calendar Widget displays a list of upcoming events."
+msgstr "Le widget Gig Calendar affiche une liste des évènements à venir"
+
+#: mf_gig_calendar_widget.php:112
+msgid "View My Event Calendar"
+msgstr "Afficher le calendrier des évènements"
+
+#: mf_gig_calendar_widget.php:117
+msgid "Widget Title"
+msgstr "Nom du widget"
+
+#: mf_gig_calendar_widget.php:122
+msgid "How many events to display?"
+msgstr "Nombre d'évènements à afficher ?"
+
+#: mf_gig_calendar_widget.php:128
+msgid "Display the widget even when there are no upcoming events."
+msgstr "Affiche le widget même si aucun évènement à venir n'existe"
+
+#: mf_gig_calendar_widget.php:132
+msgid "Date Format:"
+msgstr "Format de date"
+
+#: mf_gig_calendar_widget.php:134
+msgid "Help"
+msgstr "Aide"
+
+#: mf_gig_calendar_widget.php:138
+msgid ""
+"Add a link to the main event calendar (specified in MF Gig Calendar "
+"Settings)."
+msgstr "Ajoute un lien au "
+
+#: mf_gig_calendar_widget.php:143
+msgid "Link Text"
+msgstr "Texte du lien"
+
+#: mf_gig_calendar_widget.php:148
+msgid ""
+"Note: If the \"View My Calendar\" link isn't displaying in your widget "
+"please make sure you have entered a URL for your calendar in the MF Gig "
+"Calendar Settings."
+msgstr ""
+"Note : Si le lien 'Afficher mon calendrier' ne fonctionne pas dans le "
+"widget, vérifiez que l'adresse correspondante a été entrée dans les "
+"paramètres"

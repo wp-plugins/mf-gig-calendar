@@ -1,0 +1,302 @@
+# Copyright (C) 2012 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version: MF Gig Calendar\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/mf-gig-calendar\n"
+"POT-Creation-Date: 2012-10-10 02:43:46+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2012-10-10 13:23-0500\n"
+"Last-Translator: Matthew Fries <matthew@matthewfries.com>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: German\n"
+
+#: mf_gig_calendar.php:187
+msgid "Event Calendar"
+msgstr "Event Kalendar"
+
+#: mf_gig_calendar.php:190 mf_gig_calendar.php:338
+msgid "Event Calendar Settings"
+msgstr "Event Kalendar Einstellungen"
+
+#: mf_gig_calendar.php:190
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: mf_gig_calendar.php:193 mf_gig_calendar.php:242 mf_gig_calendar.php:324
+msgid "About MF Gig Calendar"
+msgstr "Über MF Gig Calendar"
+
+#: mf_gig_calendar.php:193
+msgid "About"
+msgstr "Über"
+
+#: mf_gig_calendar.php:220 mf_gig_calendar.php:328
+msgid "Basic Usage"
+msgstr ""
+
+#: mf_gig_calendar.php:223
+msgid "Oh Make My Events Behave - Optional Settings"
+msgstr ""
+
+#: mf_gig_calendar.php:226
+msgid "Calendar Title"
+msgstr ""
+
+#: mf_gig_calendar.php:227
+msgid "Empty Upcoming Calendar"
+msgstr ""
+
+#: mf_gig_calendar.php:228
+msgid "Calendar URL"
+msgstr "Kalendar URL"
+
+#: mf_gig_calendar.php:229
+msgid "RSS Feed"
+msgstr ""
+
+#: mf_gig_calendar.php:237
+msgid ""
+"Basic installation is easy. Just place this short code on any Page or Post "
+"where you want the event list to appear"
+msgstr ""
+
+#: mf_gig_calendar.php:241
+msgid "Enter some events and you'll be up and running"
+msgstr ""
+
+#: mf_gig_calendar.php:241
+msgid "Create Event"
+msgstr "Veranstaltung Erstellen"
+
+#: mf_gig_calendar.php:242
+msgid "Learn more about how it works on the About Page"
+msgstr ""
+
+#: mf_gig_calendar.php:247
+msgid ""
+"Once you have events displaying on your site you can customize MF Gig "
+"Calendar slightly with the following optional settings."
+msgstr ""
+
+#: mf_gig_calendar.php:254
+msgid "Include an RSS feed link on your event page?"
+msgstr ""
+
+#: mf_gig_calendar.php:263
+msgid ""
+"It happens. Sometimes there just isn't much going on (or there's too much "
+"going on and you forgot to update your calendar on your website). \n"
+"\tWhat do you want your event calendar to do in those rare\n"
+"\tmoments when you don't have any upcoming events to display in your "
+"calendar?"
+msgstr ""
+
+#: mf_gig_calendar.php:266
+msgid "Display the archive for the current year"
+msgstr ""
+
+#: mf_gig_calendar.php:266
+msgid "default"
+msgstr ""
+
+#: mf_gig_calendar.php:267
+msgid "Display the following message:"
+msgstr ""
+
+#: mf_gig_calendar.php:277
+msgid ""
+"You can put your event calendar on any Page or Post on your site, once you "
+"have it working you can let MF Gig Calendar know where it is by entering a "
+"URL of the Page or Post here. MF Gig Calendar will use this URL in the RSS "
+"feed and in the widget."
+msgstr ""
+
+#: mf_gig_calendar.php:278
+msgid "Example"
+msgstr "Beispiel"
+
+#: mf_gig_calendar.php:286 mf_gig_calendar.php:768
+msgid "Upcoming Events"
+msgstr "Kommende Veranstaltungen"
+
+#: mf_gig_calendar.php:288
+msgid ""
+"What title do you want to use in your event calendar when it is displaying "
+"upcoming events? Feel free to be creative!"
+msgstr ""
+
+#: mf_gig_calendar.php:296 mf_gig_calendar.php:388
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: mf_gig_calendar.php:301
+msgid "Settings saved."
+msgstr ""
+
+#: mf_gig_calendar.php:306
+msgid "MF Gig Calendar Settings"
+msgstr "MF Gig Calendar Einstellungen"
+
+#: mf_gig_calendar.php:312
+msgid "Save Changes"
+msgstr ""
+
+#: mf_gig_calendar.php:329
+msgid ""
+"Easy! Just place this short code on any Page or Post where you want the "
+"event calendar to appear"
+msgstr ""
+
+#: mf_gig_calendar.php:333
+msgid "That's it! Well, that and adding some events of course..."
+msgstr ""
+
+#: mf_gig_calendar.php:335 mf_gig_calendar.php:604 mf_gig_calendar.php:630
+msgid "Create New Event"
+msgstr "Neue Veranstaltung Erstellen"
+
+#: mf_gig_calendar.php:337
+msgid ""
+"The plugin includes a handy widget you can place in your sidebar to show "
+"upcoming events. Just drag it into your sidebar to display a list of a few "
+"upcoming events"
+msgstr ""
+
+#: mf_gig_calendar.php:338
+msgid ""
+"Be sure to also check out the Event Calendar Settings to get MF Gig Calendar "
+"behaving just the way you want"
+msgstr ""
+
+#: mf_gig_calendar.php:342
+msgid "Note from the Author"
+msgstr ""
+
+#: mf_gig_calendar.php:509
+msgid "Add/Edit Event"
+msgstr ""
+
+#: mf_gig_calendar.php:514
+msgid "Start Date"
+msgstr "Anfangsdatum"
+
+#: mf_gig_calendar.php:514 mf_gig_calendar.php:523
+msgid "required"
+msgstr ""
+
+#: mf_gig_calendar.php:518
+msgid "End Date"
+msgstr "Endungsdatum"
+
+#: mf_gig_calendar.php:523
+msgid "Event Title"
+msgstr ""
+
+#: mf_gig_calendar.php:528
+msgid "Event Time"
+msgstr ""
+
+#: mf_gig_calendar.php:533
+msgid "Event Location"
+msgstr ""
+
+#: mf_gig_calendar.php:556 mf_gig_calendar.php:607 mf_gig_calendar.php:633
+msgid "Event Details"
+msgstr ""
+
+#: mf_gig_calendar.php:576
+msgid "Save Event"
+msgstr ""
+
+#: mf_gig_calendar.php:576
+msgid "Cancel"
+msgstr ""
+
+#: mf_gig_calendar.php:607 mf_gig_calendar.php:633
+msgid "Date"
+msgstr "Datum"
+
+#: mf_gig_calendar.php:607 mf_gig_calendar.php:633
+msgid "Event"
+msgstr ""
+
+#: mf_gig_calendar.php:620
+msgid "Edit this event"
+msgstr ""
+
+#: mf_gig_calendar.php:620
+msgid "Edit"
+msgstr ""
+
+#: mf_gig_calendar.php:621
+msgid "Create a new event based on this event"
+msgstr ""
+
+#: mf_gig_calendar.php:621
+msgid "Duplicate"
+msgstr ""
+
+#: mf_gig_calendar.php:622
+msgid "Delete this event"
+msgstr ""
+
+#: mf_gig_calendar.php:622
+msgid "Delete"
+msgstr ""
+
+#: mf_gig_calendar.php:636
+msgid "No events found in this range."
+msgstr ""
+
+#: mf_gig_calendar.php:759
+msgid "Events"
+msgstr "Veranstaltungen"
+
+#: mf_gig_calendar.php:760 mf_gig_calendar.php:764 mf_gig_calendar.php:770
+msgid "Upcoming"
+msgstr "Kommend"
+
+#: mf_gig_calendar.php:760 mf_gig_calendar.php:764 mf_gig_calendar.php:770
+msgid "Archive"
+msgstr "Archiv"
+
+#: mf_gig_calendar.php:763
+msgid "Event Information"
+msgstr ""
+
+#: mf_gig_calendar_widget.php:26
+msgid "MF Gig Calendar Widget displays a list of upcoming events."
+msgstr ""
+
+#: mf_gig_calendar_widget.php:98
+msgid "View My Event Calendar"
+msgstr ""
+
+#: mf_gig_calendar_widget.php:102
+msgid "Widget Title"
+msgstr ""
+
+#: mf_gig_calendar_widget.php:107
+msgid "How many events to display?"
+msgstr ""
+
+#: mf_gig_calendar_widget.php:113
+msgid ""
+"Add a link to the URL for my event calendar that I specified in the MF Gig "
+"Calendar Settings."
+msgstr ""
+
+#: mf_gig_calendar_widget.php:118
+msgid "Link Text"
+msgstr ""
+
+#: mf_gig_calendar_widget.php:123
+msgid ""
+"Note: If the \"View My Calendar\" link isn't displaying in your widget "
+"please make sure you have entered a URL for your calendar in the MF Gig "
+"Calendar Settings."
+msgstr ""
