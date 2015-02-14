@@ -92,6 +92,11 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+
+**Version 1.0.1**
+
+* Updated French translation
+
 **Version 1.0**
 
 * UTF8 support (Note: this requires altering the mfgigcal table in your database, so please make sure you backup your data first)
