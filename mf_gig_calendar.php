@@ -1197,7 +1197,7 @@ function mfgigcal_update_db_check() {
     global $mfgigcal_db_version;
     if (get_site_option('mfgigcal_db_version') < $mfgigcal_db_version) {
         if(get_site_option('mfgigcal_db_version') < 2.0) {
-        	mfgigcal_update_db();
+        	//mfgigcal_update_db();
         }
 		update_option( "mfgigcal_db_version", $mfgigcal_db_version);
     }
