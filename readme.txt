@@ -96,6 +96,7 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 **Version 1.0.1**
 
 * Updated French translation
+* Fixed database update errors
 
 **Version 1.0**
 
