@@ -1197,7 +1197,7 @@ function mfgigcal_update_db_check() {
     global $mfgigcal_db_version;
     if (get_site_option('mfgigcal_db_version') < $mfgigcal_db_version) {
         if(get_site_option('mfgigcal_db_version') < 2.0) {
-        	//mfgigcal_update_db();
+        	mfgigcal_update_db_charset();
         }
 		update_option( "mfgigcal_db_version", $mfgigcal_db_version);
     }
@@ -1205,81 +1205,16 @@ function mfgigcal_update_db_check() {
 add_action('plugins_loaded', 'mfgigcal_update_db_check');
 
 
-function mfgigcal_update_db() {
-
-	// Convert from latin1_swedish_ci to utf8_general_ci
-	$convert_fields_collate_from = 'latin1_swedish_ci';
-	$convert_fields_collate_to = 'utf8_general_ci';
-	$convert_tables_character_set_to = 'utf8';
-	$show_debug_messages = false;
+function mfgigcal_update_db_charset() {
 	global $wpdb;
-	$wpdb->show_errors();
-	
 	$table = $wpdb->prefix . 'mfgigcal';
-	$indicies = $wpdb->get_results(  "SHOW INDEX FROM `$table`", ARRAY_A );
-	$results = $wpdb->get_results( "SHOW FULL COLUMNS FROM `$table`" , ARRAY_A );
-	foreach($results as $result){
-		if($show_debug_messages)echo "Checking field ".$result['Field'] ." with collat: ".$result['Collation']."\n";
-		if(isset($result['Field']) && $result['Field'] && isset($result['Collation']) && $result['Collation'] == $convert_fields_collate_from){
-			if($show_debug_messages)echo "Table: $table - Converting field " .$result['Field'] ." - " .$result['Type']." - from $convert_fields_collate_from to $convert_fields_collate_to \n";
-			// found a field to convert. check if there's an index on this field.
-			// we have to remove index before converting field to binary.
-			$is_there_an_index = false;
-			foreach($indicies as $index){
-				if ( isset($index['Column_name']) && $index['Column_name'] == $result['Field']){
-					// there's an index on this column! store it for adding later on.
-					$is_there_an_index = $index;
-					$wpdb->query( $wpdb->prepare( "ALTER TABLE `%s` DROP INDEX %s", $table, $index['Key_name']) );
-					if($show_debug_messages)echo "Dropped index ".$index['Key_name']." before converting field.. \n";
-					break;
-				}
-			}
-			$set = false;
-
-			if ( preg_match( "/^varchar\((\d+)\)$/i", $result['Type'], $mat ) ) {
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` VARBINARY({$mat[1]})" );
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` VARCHAR({$mat[1]}) CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-				$set = true;
-			} else if ( !strcasecmp( $result['Type'], "CHAR" ) ) {
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` BINARY(1)" );
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` VARCHAR(1) CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-				$set = true;
-			} else if ( !strcasecmp( $result['Type'], "TINYTEXT" ) ) {
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` TINYBLOB" );
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` TINYTEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-				$set = true;
-			} else if ( !strcasecmp( $result['Type'], "MEDIUMTEXT" ) ) {
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` MEDIUMBLOB" );
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` MEDIUMTEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-				$set = true;
-			} else if ( !strcasecmp( $result['Type'], "LONGTEXT" ) ) {
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` LONGBLOB" );
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` LONGTEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-				$set = true;
-			} else if ( !strcasecmp( $result['Type'], "TEXT" ) ) {
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` BLOB" );
-				$wpdb->query( "ALTER TABLE `{$table}` MODIFY `{$result['Field']}` TEXT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-				$set = true;
-			}else{
-				if($show_debug_messages)echo "Failed to change field - unsupported type: ".$result['Type']."\n";
-			}
-			if($set){
-				if($show_debug_messages)echo "Altered field success! \n";
-			}
-			if($is_there_an_index !== false){
-				// add the index back.
-				if ( !$is_there_an_index["Non_unique"] ) {
-					$wpdb->query( "CREATE UNIQUE INDEX `{$is_there_an_index['Key_name']}` ON `{$table}` ({$is_there_an_index['Column_name']})", $is_there_an_index['Key_name'], $table, $is_there_an_index['Column_name'] );
-				} else {
-					$wpdb->query( "CREATE UNIQUE INDEX `{$is_there_an_index['Key_name']}` ON `{$table}` ({$is_there_an_index['Column_name']})", $is_there_an_index['Key_name'], $table, $is_there_an_index['Column_name'] );
-				}
-			}
-		}
-		// set default collate
-		$wpdb->query( "ALTER TABLE `{$table}` DEFAULT CHARACTER SET {$convert_tables_character_set_to} COLLATE {$convert_fields_collate_to}" );
-		if($show_debug_messages)echo "Finished with table $table \n";
-	}
-	$wpdb->hide_errors();
+	
+	$update_query = "ALTER TABLE `" . $table . "` CHANGE `time` `time` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+CHANGE `title` `title` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+CHANGE `location` `location` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+CHANGE `details` `details` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ;";
+	
+	$wpdb->query( $update_query );
 }
 
 ?>
