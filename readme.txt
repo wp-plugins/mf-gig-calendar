@@ -8,7 +8,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -92,6 +92,10 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+
+**Version 1.0.2**
+
+* Bug fixes - sorry...
 
 **Version 1.0.1**
 
