@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 1.0.2
+Version: 1.0.3
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -88,10 +88,10 @@ function mfgigcal_getrows($atts) {
 	
 	$sql = "SELECT * FROM $mfgigcal_table ";
 	
-	/*if ($ytd == date("Y") && empty($atts)) {
+	if ($ytd == date("Y") && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
 	}
-	else */ if ($ytd && empty($atts)) {
+	else if ($ytd && empty($atts)) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
 	
@@ -139,8 +139,12 @@ function mfgigcal_getrows($atts) {
 	}
 	
 	if (get_option('permalink_structure')) {
-		global $post;
-		$query_prefix = get_permalink(get_post( $post )->id) . "?";
+		if ($mfgigcal_settings['calendar_url']) {
+			$query_prefix = $mfgigcal_settings['calendar_url'] . "?";
+		} else {
+			global $post;
+			$query_prefix = get_permalink(get_post( $post )->id) . "?";
+		}
 	}
 	else {
 		$existing = "?";
@@ -837,10 +841,10 @@ function mfgigcal_list_events() {
 	
 	$sql = "SELECT * FROM $mfgigcal_table ";
 	
-	/*if ($ytd == date("Y")) {
+	if ($ytd == date("Y")) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND end_date < '$today') ";
 	}
-	else */ if ($ytd) {
+	else if ($ytd) {
 		$sql .= "WHERE (end_date >= '" . $ytd . "-01-01' AND start_date <= '" . $ytd . "-12-31') ";
 	}
 	else {
@@ -1046,21 +1050,21 @@ function mfgigcal_CalendarNav($show_title = true) {
 	
 	if ($ytd) {
 		if ($show_title) $mfgigcal_nav = "<h2 id=\"cal_title\">" . $ytd . "</h2>";
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Years', 'mfgigcal') . ": ";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else if ($event_id) {
 		if ($show_title) {
 			($mfgigcal_settings['event_title'] == "") ? $event_title = __('Event Information', 'mfgigcal') : $event_title = $mfgigcal_settings['event_title'];
 			$mfgigcal_nav = "<h2 id=\"cal_title\">$event_title</h2>";
 		}
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Years', 'mfgigcal') . ": ";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><a href=\"" . $reset_link . "\">" . __('Upcoming', 'mfgigcal') . "</a> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	else {
 		if ($show_title) {
 			($mfgigcal_settings['upcoming_title'] == "") ? $upcoming_title = __('Upcoming Events', 'mfgigcal') : $upcoming_title = $mfgigcal_settings['upcoming_title'];
 			$mfgigcal_nav = "<h2 id=\"cal_title\">$upcoming_title</h2>";
 		}
-		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Years', 'mfgigcal') . ": ";
+		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	
 	for ($i=$last_year;$i>=$first_year;$i--) {
