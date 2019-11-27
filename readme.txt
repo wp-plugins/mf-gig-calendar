@@ -7,8 +7,8 @@ Author URI: http://www.matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 4.1
-Stable tag: 1.0.3
+Tested up to: 5.3
+Stable tag: 1.0.4
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
@@ -93,9 +93,14 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 == Changelog ==
 
 
+**Version 1.0.4**
+
+* Fixed issue with dates being off by a day!
+* Updates to be compatible with PHP 7
+
 **Version 1.0.3**
 
-* By popular and instistant demand "Archive" is back.
+* By popular and insistant demand "Archive" is back.
 * More bug fixes
 
 **Version 1.0.2**
@@ -228,4 +233,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 1.0 adds a few important fixes and a few user requested additions.
+Version 1.0.4 fixes an issue with dates being off by a day! Also updates to be compatible with PHP 7.
