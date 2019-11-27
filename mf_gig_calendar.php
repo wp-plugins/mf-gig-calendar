@@ -2,7 +2,7 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 1.0.3
+Version: 1.0.4
 Author: Matthew Fries
 Plugin URI: http://www.matthewfries.com/mf-gig-calendar
 Author URI: http://www.matthewfries.com
@@ -51,8 +51,8 @@ function mfgigcal_getrows($atts) {
 	($mfgigcal_settings['event_details']) ? $event_details = false : $event_details = true; // hide event details?
 	
 	// clean the variables
-	$ytd = mfgigcal_Clean($_GET[ytd]);
-	$event_id = mfgigcal_Clean($_GET[event_id]);
+	$ytd = mfgigcal_Clean($_GET['ytd']);
+	$event_id = mfgigcal_Clean($_GET['event_id']);
 	
 	// overrides from shortcode attributes
     extract( shortcode_atts( array( 
@@ -200,7 +200,7 @@ function mfgigcal_getrows($atts) {
 		$mfgigcal_data .= "\t<span class=\"time\">" . $mfgigcal_event->time . "</span>\n";
 		$mfgigcal_data .= "\t<span class=\"location\">" . $mfgigcal_event->location . "</span>\n";
 		if ($details || $id) {
-			$mfgigcal_data .= "\t<span class=\"details\">" . do_shortcode( $mfgigcal_event->details ) . "</span>\n";
+			$mfgigcal_data .= "\t<span class=\"details\">" . apply_filters( 'the_content', $mfgigcal_event->details ) . "</span>\n";
 		}
 		$mfgigcal_data .= "</div>\n</li>\n";
 	
@@ -214,11 +214,9 @@ function mfgigcal_getrows($atts) {
 
 function mfgigcal_FormatDate($start_date, $end_date) { // FUNCTION ///////////
 
-	$startArray = explode("-", $start_date);
-	$start_date = mktime(0,0,0,$startArray[1],$startArray[2],$startArray[0]);
-	
-	$endArray = explode("-", $end_date);
-	$end_date = mktime(0,0,0,$endArray[1],$endArray[2],$endArray[0]);
+	$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
+	$start_date = strtotime($start_date) + $offset;
+	$end_date = strtotime($end_date) + $offset;
 	
 	if ($start_date == $end_date) { 
 		//print date("M j, Y", $start_date); // one day event
@@ -624,7 +622,7 @@ function mfgigcal_admin() {
 		mfgigcal_save_record();
 	}
 
-	switch ($_GET[action]) {
+	switch ($_GET['action']) {
 
 		case "edit" :
 			echo '<div class="wrap">';
@@ -659,7 +657,7 @@ function mfgigcal_delete_event() {
 	$wpdb->query(
 		"
 		DELETE FROM $mfgigcal_table 
-		WHERE id = '$_GET[id]'
+		WHERE id = '" . $_GET['id'] . "'
 		"
 	);
 }
@@ -683,19 +681,19 @@ function mfgigcal_save_record() {
 		$end_date = $_POST['end_date'];
 	}
 	
-	if ($_POST[id]) {  // update record
+	if ($_POST['id']) {  // update record
 		$wpdb->update( 
 			$mfgigcal_table, 
 			array( 
-				'start_date' => $_POST[start_date], 
+				'start_date' => $_POST['start_date'], 
 				'end_date' => $end_date,
 				'pub_date' => date("Y-m-d H:i:s"),
-				'time' => $_POST[time],
-				'title' => $_POST[title],
-				'location' => $_POST[location],
-				'details' => $_POST[details]
+				'time' => $_POST['time'],
+				'title' => $_POST['title'],
+				'location' => $_POST['location'],
+				'details' => $_POST['details']
 			), 
-			array ( 'id' => $_POST[id]),
+			array ( 'id' => $_POST['id']),
 			array( 
 				'%s', 
 				'%s', 
@@ -710,13 +708,13 @@ function mfgigcal_save_record() {
 		$wpdb->insert( 
 			$mfgigcal_table, 
 			array( 
-				'start_date' => $_POST[start_date], 
+				'start_date' => $_POST['start_date'], 
 				'end_date' => $end_date,
 				'pub_date' => date("Y-m-d H:i:s"),
-				'time' => $_POST[time],
-				'title' => $_POST[title],
-				'location' => $_POST[location],
-				'details' => $_POST[details]
+				'time' => $_POST['time'],
+				'title' => $_POST['title'],
+				'location' => $_POST['location'],
+				'details' => $_POST['details']
 			), 
 			array( 
 				'%s', 
@@ -736,14 +734,14 @@ function mfgigcal_edit_event() {
 	
 	$sql = "SELECT *
 			FROM $mfgigcal_table
-			WHERE id = $_GET[id]
+			WHERE id = '" . $_GET['id'] . "'
 			LIMIT 1";
 			
 	$mfgigcal_event = $wpdb->get_row($sql);
 	
-	$ytd = mfgigcal_Clean($_GET[ytd]);
+	$ytd = mfgigcal_Clean($_GET['ytd']);
 	
-	if ($_GET[action] == "copy") {
+	if ($_GET['action'] == "copy") {
 		$start_date = date('Y-m-d');
 		$end_date = date('Y-m-d');
 	}
@@ -760,7 +758,7 @@ function mfgigcal_edit_event() {
 	echo "<h2>" . __('Add/Edit Event', 'mfgigcal') . "</h2>";
 	
 	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
-	if ($_GET[action] == "edit") echo "<input type=\"hidden\" name=\"id\" value=\"$_GET[id]\" />";
+	if ($_GET['action'] == "edit") echo '<input type="hidden" name="id" value="' . $_GET['id'] . '">';
 		echo "
 		<input type=\"hidden\" name=\"ytd\" value=\"$ytd\">
 		<table class=\"form-table\">
@@ -901,17 +899,17 @@ function mfgigcal_list_events() {
 
 function mfgigcal_admin_FormatDate($start_date, $end_date) {
 
+	$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
 	$startArray = explode("-", $start_date);
-	$start_date = mktime(0,0,0,$startArray[1],$startArray[2],$startArray[0]);
-	
+	$start_date = strtotime($start_date) + $offset;
 	$endArray = explode("-", $end_date);
-	$end_date = mktime(0,0,0,$endArray[1],$endArray[2],$endArray[0]);
+	$end_date = strtotime($end_date) + $offset;
 	
 	$mfgigcal_date;
 	
 	if ($start_date == $end_date) {
 		if ($startArray[2] == "00") {
-			$start_date = mktime(0,0,0,$startArray[1],15,$startArray[0]);			
+			$start_date = mktime(0,0,0,$startArray[1],15,$startArray[0]) + $offset;	
 			$mfgigcal_date .= '<span style="white-space:nowrap;">' . date_i18n("F, Y", $start_date) . "</span>";
 			return $mfgigcal_date;
 		}
@@ -1010,7 +1008,7 @@ function mfgigcal_CalendarNav($show_title = true) {
 			LIMIT 1";
 	$first_year = $wpdb->get_results($sql, ARRAY_A);
 	
-	(!empty($first_year)) ? $first_year = mfgigcal_ExtractDate($first_year[0][start_date],'Y') : $first_year = date("Y");
+	(!empty($first_year)) ? $first_year = mfgigcal_ExtractDate($first_year[0]['start_date'],'Y') : $first_year = date("Y");
 	
 	$sql = "SELECT DISTINCT *
 			FROM $mfgigcal_table 
@@ -1020,7 +1018,7 @@ function mfgigcal_CalendarNav($show_title = true) {
 			LIMIT 1";
 	$last_year = $wpdb->get_results($sql, ARRAY_A);
 	
-	(!empty($last_year)) ? $last_year = mfgigcal_ExtractDate($last_year[0][end_date],'Y') : $last_year = date("Y");
+	(!empty($last_year)) ? $last_year = mfgigcal_ExtractDate($last_year[0]['end_date'],'Y') : $last_year = date("Y");
 	
 	if ( is_admin() ) {
 		$query_prefix = "?page=mf_gig_calendar&";
