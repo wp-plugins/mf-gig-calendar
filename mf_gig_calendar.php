@@ -2,10 +2,10 @@
 /*
 Plugin Name: MF Gig Calendar
 Description: A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
-Version: 1.0.4
+Version: 1.1
 Author: Matthew Fries
-Plugin URI: http://www.matthewfries.com/mf-gig-calendar
-Author URI: http://www.matthewfries.com
+Plugin URI: https://matthewfries.com/mf-gig-calendar
+Author URI: https://matthewfries.com
 
 
 Copyright (C) 2012 Matthew Fries
@@ -212,36 +212,38 @@ function mfgigcal_getrows($atts) {
 	
 }
 
+$month_array = "";
+$weekday_array = "";
+
 function mfgigcal_FormatDate($start_date, $end_date) { // FUNCTION ///////////
 
-	$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
-	$start_date = strtotime($start_date) + $offset;
-	$end_date = strtotime($end_date) + $offset;
+	$start_date = strtotime($start_date);
+	$end_date = strtotime($end_date);
 	
 	if ($start_date == $end_date) { 
 		//print date("M j, Y", $start_date); // one day event
 		$mfgigcal_date = "<div class=\"end-date\">";
-			$mfgigcal_date .= "<div class=\"weekday\">" . date_i18n("D", $start_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"day\">" . date_i18n("d", $start_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"month\">" . date_i18n("M", $start_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"year\">" . date_i18n("Y", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"weekday\">" . wp_date("D", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"day\">" . wp_date("d", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"month\">" . wp_date("M", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"year\">" . wp_date("Y", $start_date) . "</div>";
 		$mfgigcal_date .= "</div>";
 		return $mfgigcal_date;
 	}
 	else {
 		//print date("M j, Y", $start_date); // multi-day event
 		$mfgigcal_date = "<div class=\"start-date\">";
-			$mfgigcal_date .= "<div class=\"weekday\">" . date_i18n("D", $start_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"day\">" . date_i18n("d", $start_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"month\">" . date_i18n("M", $start_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"year\">" . date_i18n("Y", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"weekday\">" . wp_date("D", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"day\">" . wp_date("d", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"month\">" . wp_date("M", $start_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"year\">" . wp_date("Y", $start_date) . "</div>";
 		$mfgigcal_date .= "</div>";
 		
 		$mfgigcal_date .= "<div class=\"end-date\">";
-			$mfgigcal_date .= "<div class=\"weekday\">" . date_i18n("D", $end_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"day\">" . date_i18n("d", $end_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"month\">" .  date_i18n("M", $end_date) . "</div>";
-			$mfgigcal_date .= "<div class=\"year\">" . date_i18n("Y", $end_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"weekday\">" . wp_date("D", $end_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"day\">" . wp_date("d", $end_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"month\">" .  wp_date("M", $end_date) . "</div>";
+			$mfgigcal_date .= "<div class=\"year\">" . wp_date("Y", $end_date) . "</div>";
 		$mfgigcal_date .= "</div>";
 		return $mfgigcal_date;
 	}
@@ -257,7 +259,7 @@ load_plugin_textdomain('mfgigcal', false, basename( dirname( __FILE__ ) ) . '/la
 
 add_action('admin_menu', 'mfgigcal_admin_menu');
 function mfgigcal_admin_menu() {
-	$page = add_menu_page( __('MF Gig Calendar', 'mfgigcal'), __('MF Gig Calendar', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar', 'mfgigcal_admin');
+	$page = add_menu_page( __('MF Gig Calendar', 'mfgigcal'), __('MF Gig Calendar', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar', 'mfgigcal_admin', 'dashicons-calendar-alt');
 	add_action('admin_head-' . $page, 'mfgigcal_admin_register_head');
 	
 	$page = add_submenu_page( 'mf_gig_calendar', __('MF Gig Calendar Settings', 'mfgigcal'), __('Settings', 'mfgigcal'), 'edit_posts', 'mf_gig_calendar_settings', 'mfgigcal_settings_page');
@@ -326,7 +328,8 @@ function mfgigcal_register_settings() {
 	add_settings_field('sort_order', __('Sort Order', 'mfgigcal'), 'mfgigcal_settings_display_sort_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('event_links', __('Individual Events', 'mfgigcal'), 'mfgigcal_settings_display_link_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('event_details', __('Event Details Display', 'mfgigcal'), 'mfgigcal_settings_display_details_field', 'mfgigcal', 'mfgigcal_settings_display');
-	add_settings_field('display', __('Empty Upcoming Calendar', 'mfgigcal'), 'mfgigcal_settings_display_display_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('archive_limit', __('Archive List Limit', 'mfgigcal'), 'mfgigcal_settings_display_archive_limit_field', 'mfgigcal', 'mfgigcal_settings_display');
+	add_settings_field('display', __('Empty Calendar', 'mfgigcal'), 'mfgigcal_settings_display_display_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('calendar_url', __('Calendar URL', 'mfgigcal'), 'mfgigcal_settings_display_url_field', 'mfgigcal', 'mfgigcal_settings_display');
 	add_settings_field('rss', __('RSS Feed', 'mfgigcal'), 'mfgigcal_settings_display_rss_field', 'mfgigcal', 'mfgigcal_settings_display');
 }
@@ -360,10 +363,30 @@ function mfgigcal_settings_display_rss_field() {
 	</p>
 	<p><?php _e('What is your preferred format to use for dates in your RSS feed?', 'mfgigcal'); ?>
 	<select id ="rss_date_format" name="mfgigcal_settings[rss_date_format]">
-	<option value="mdy" <?php if ($options['rss_date_format'] == "mdy") echo "selected"; ?>><?php echo date_i18n('M j, Y'); ?>  </option>
-	<option value="dmy" <?php if ($options['rss_date_format'] == "dmy") echo "selected"; ?>><?php echo date_i18n('j M, Y'); ?>  </option>
+	<option value="mdy" <?php if ($options['rss_date_format'] == "mdy") echo "selected"; ?>><?php echo wp_date('M j, Y'); ?>  </option>
+	<option value="dmy" <?php if ($options['rss_date_format'] == "dmy") echo "selected"; ?>><?php echo wp_date('j M, Y'); ?>  </option>
 	</select>
 	<br>	
+	</p>
+	
+	<?php
+}
+
+function mfgigcal_settings_display_archive_limit_field() {
+    $siteurl = get_option('siteurl');
+	$options = get_option('mfgigcal_settings');
+	?>
+	<p><?php _e('Limit the number of years to display in the archive menu.', 'mfgigcal'); ?>
+	<select id="archive_limit" name="mfgigcal_settings[archive_limit]">
+	<option value="0" <?php if ($options['archive_limit'] == "0") echo "selected"; ?>><?php _e('Infininite'); ?>  </option>
+	<?php 
+	for ($i=10; $i>0; $i--) { 
+		echo '<option value="' . $i . '" ';
+		if ($options['archive_limit'] == $i) echo "selected";
+		echo '>' . $i . '  </option>';
+	} 
+	?>	
+	</select><br>
 	</p>
 	
 	<?php
@@ -483,13 +506,15 @@ function mfgigcal_about_page() {
 	<div style="float:right;margin:0px 0px 15px 30px;padding-left:30px;border-left:solid 1px #ccc;width:35%;">
 	<h3><?php _e('Check Out My Music', 'mfgigcal'); ?></h3>
 	<p><?php _e('I have a few albums of jazz piano music. If you are a music fan I hope you will take a moment and listen!', 'mfgigcal'); ?></p>
+	<p><a href="https://matthewfries.com/music">matthewfries.com/music</a></p>
 	<p>
-	<a href="http://www.matthewfries.com/music/staring-into-the-sun/" target="_blank" title="TRI-FI: Staring into the Sun **** (4 stars) Downbeat"><img src="<?=$mfgigcal_url?>/images/cd_Staring-into-the-Sun.png" alt="TRI-FI Staring into the Sun" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/tri-fi-3/" target="_blank" title="TRI-FI: 3"><img src="<?=$mfgigcal_url?>/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/a-tri-fi-christmas/" target="_blank" title="A TRI-FI Christmas"><img src="<?=$mfgigcal_url?>/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/postcards/" target="_blank" title="TRI-FI: Postcards"><img src="<?=$mfgigcal_url?>/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/tri-fi/" target="_blank" title="TRI-FI"><img src="<?=$mfgigcal_url?>/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a> 
-	<a href="http://www.matthewfries.com/music/" target="_blank" title="Matthew Fries: Song for Today"><img src="<?=$mfgigcal_url?>/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/parallel-states/" target="_blank" title="Matthew Fries: Parallel States"><img src="<?=$mfgigcal_url?>/images/cd_Parallel-States.png" alt="Matthew Fries Parallel States" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/staring-into-the-sun/" target="_blank" title="TRI-FI: Staring into the Sun **** (4 stars) Downbeat"><img src="<?=$mfgigcal_url?>/images/cd_Staring-into-the-Sun.png" alt="TRI-FI Staring into the Sun" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/tri-fi-3/" target="_blank" title="TRI-FI: 3"><img src="<?=$mfgigcal_url?>/images/cd_3.png" alt="TRI-FI 3" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/a-tri-fi-christmas/" target="_blank" title="A TRI-FI Christmas"><img src="<?=$mfgigcal_url?>/images/cd_TRI-FI-Christmas.png" alt="A TRI-FI Christmas" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/postcards/" target="_blank" title="TRI-FI: Postcards"><img src="<?=$mfgigcal_url?>/images/cd_Postcards.png" alt="TRI-FI Postcards" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/tri-fi/" target="_blank" title="TRI-FI"><img src="<?=$mfgigcal_url?>/images/cd_TRI-FI.png" alt="TRI-FI" width="75" height="67" border="0" style="margin:5px;" /></a> 
+	<a href="https://matthewfries.com/music/" target="_blank" title="Matthew Fries: Song for Today"><img src="<?=$mfgigcal_url?>/images/cd_Song-for-Today.png" alt="Song for Today" width="75" height="67" border="0" style="margin:5px;" /></a> 
 	</p>
 	<h3><?php _e('Donate to Support This Project', 'mfgigcal'); ?></h3>
 	<p><?php _e('Buy me a beer. Help me pay rent. Whatever. Every little bit helps keep this project going and PayPal makes it easy to send your support.', 'mfgigcal'); ?></p>
@@ -573,23 +598,18 @@ function mfgigcal_about_page() {
 	<p>Thanks for trying my MF Gig Calendar event plugin. I hope it helps you!</p>
 	
 	<p>I'm <strong>Matthew Fries</strong> (that's where the MF comes from) and I'm a NYC jazz pianist and part-time web developer. I developed this plugin because 
-	I wanted a flexible and easy to use performance calendar for <a href="http://www.matthewfries.com">my own music website</a>. In the process I tried to create 
+	I wanted a flexible and easy to use performance calendar for <a href="https://matthewfries.com">my own music website</a>. In the process I tried to create 
 	something that would work for more than just musicians. 
 	I've added a few features since it started - beginning and end dates for multiple-day events, a duplicate function to make it easier if you 
 	have a repeating event that you don't want to re-enter over and over, an RSS feed, a widget to put upcoming events in the sidebar - 
 	but as a general rule I've tried to keep this as 
 	simple as possible. I think anyone who needs to display a list of events on their Wordpress site would find this useful.</p>
 	
-	<p>If you're a musician and you want really fancy - ticketing info, mapping, tour grouping, etc - you should check out 
-	"<a href="http://wordpress.org/extend/plugins/gigs-calendar/">Gigs Calendar</a>" by <b>Dan Coulter</b>  over at 
-	<a href="http://blogsforbands.com/" target="_blank">blogsforbands.com</a>. 
-	He has a great plugin that I've also used quite a few times that has all kinds of cool features specific to musicians and fans. Really, it's great.</p>
-	
 	<p>
-	This plugin is free for you to use, and if you find it useful I hope you'll take a moment and also <a href="http://www.matthewfries.com" target="_blank">check out my music</a>! I love playing piano and composing and think you'll probably 
+	This plugin is free for you to use, and if you find it useful I hope you'll take a moment and also <a href="https://matthewfries.com" target="_blank">check out my music</a>! I love playing piano and composing and think you'll probably 
 	find <i>something</i> to like about what I play (unless you're one of those people who just hate everything - which would just be a sad, sad existence...).</p>
 
-	<p><a href="http://www.matthewfries.com" target="_blank">www.matthewfries.com</a>&nbsp;&nbsp;&nbsp;<-- lots of jazz music to hear here...</p>
+	<p><a href="https://matthewfries.com" target="_blank">www.matthewfries.com</a>&nbsp;&nbsp;&nbsp;<-- lots of jazz music to hear here...</p>
 
 	<p>Please let me know what you think (of the plugin and the music!) - and if you have any suggestions or find any problems. While I do my best and this plugin is working great for me 
 	and a lot of other people, I obviously can't guarantee your particular installation of Wordpress won't have problems.</p>
@@ -899,35 +919,34 @@ function mfgigcal_list_events() {
 
 function mfgigcal_admin_FormatDate($start_date, $end_date) {
 
-	$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
 	$startArray = explode("-", $start_date);
-	$start_date = strtotime($start_date) + $offset;
+	$start_date = strtotime($start_date);
 	$endArray = explode("-", $end_date);
-	$end_date = strtotime($end_date) + $offset;
+	$end_date = strtotime($end_date);
 	
 	$mfgigcal_date;
 	
 	if ($start_date == $end_date) {
 		if ($startArray[2] == "00") {
 			$start_date = mktime(0,0,0,$startArray[1],15,$startArray[0]) + $offset;	
-			$mfgigcal_date .= '<span style="white-space:nowrap;">' . date_i18n("F, Y", $start_date) . "</span>";
+			$mfgigcal_date .= '<span style="white-space:nowrap;">' . wp_date("F, Y", $start_date) . "</span>";
 			return $mfgigcal_date;
 		}
-		$mfgigcal_date .= '<span style="white-space:nowrap;">' . date_i18n("M j, Y", $start_date) . "</span>";
+		$mfgigcal_date .= '<span style="white-space:nowrap;">' . wp_date("M j, Y", $start_date) . "</span>";
 		return $mfgigcal_date;
 	}
 	
 	if ($startArray[0] == $endArray[0]) {
 		if ($startArray[1] == $endArray[1]) {
-			$mfgigcal_date .= '<span style="white-space:nowrap;">' . date_i18n("M j", $start_date) . "-" . date_i18n("j, Y", $end_date) . "</span>";
+			$mfgigcal_date .= '<span style="white-space:nowrap;">' . wp_date("M j", $start_date) . "-" . wp_date("j, Y", $end_date) . "</span>";
 			return $mfgigcal_date;
 		}
-		$mfgigcal_date .= '<span style="white-space:nowrap;">' . date_i18n("M j", $start_date) . "-" . date_i18n("M j, Y", $end_date) . "</span>";
+		$mfgigcal_date .= '<span style="white-space:nowrap;">' . wp_date("M j", $start_date) . "-" . wp_date("M j, Y", $end_date) . "</span>";
 		return $mfgigcal_date;
 	
 	}
 	
-	$mfgigcal_date .= '<span style="white-space:nowrap;">' . date_i18n("M j, Y", $start_date) . "-" . date_i18n("M j, Y", $end_date) . "</span>";
+	$mfgigcal_date .= '<span style="white-space:nowrap;">' . wp_date("M j, Y", $start_date) . "-" . wp_date("M j, Y", $end_date) . "</span>";
 	return $mfgigcal_date;
 }
 
@@ -993,7 +1012,7 @@ function mfgigcal_ExtractDate($date, $format) {
 		}
 	}
 	
-	return date_i18n($format, $date);
+	return wp_date($format, $date);
 }
 
 function mfgigcal_CalendarNav($show_title = true) {
@@ -1065,13 +1084,24 @@ function mfgigcal_CalendarNav($show_title = true) {
 		$mfgigcal_nav .= "<div id=\"cal_nav\"><strong>" . __('Upcoming', 'mfgigcal') . "</strong> | " . __('Archive', 'mfgigcal') . ": ";
 	}
 	
-	for ($i=$last_year;$i>=$first_year;$i--) {
-		($i == $ytd) ? $mfgigcal_nav .= "<strong>$i</strong> " : $mfgigcal_nav .= "<a href=\"" . $query_prefix . "ytd=$i\">$i</a> ";
+	$archive_start = date('Y');
+	$years_to_display = $archive_start - $first_year + 1;
+	if ($mfgigcal_settings['archive_limit'] > 0) {
+		$years_to_display = min($years_to_display, $mfgigcal_settings['archive_limit']);
+	}
+	$y = $archive_start;
+	for ($i=1;$i<=$years_to_display;$i++) {
+		($y == $ytd) ? $mfgigcal_nav .= '<strong>' . $y . '</strong> ' : $mfgigcal_nav .= '<a href="' . $query_prefix . 'ytd=' . $y . '">' . $y . '</a> ';
+		$y--;
 	}
 	$mfgigcal_nav .= "</div>";
 	return $mfgigcal_nav;
 
 }
+
+// 
+
+
 
 // a function I found on StackOverflow to truncate HTML...
 

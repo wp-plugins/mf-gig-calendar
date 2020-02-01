@@ -2,19 +2,19 @@
 Contributors: brewermfnyc
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=matthew@matthewfries.com
 Tags: calendar, event, gig, musician, Matthew Fries, brewermfnyc
-Plugin URI: http://www.matthewfries.com/mf-gig-calendar
-Author URI: http://www.matthewfries.com
+Plugin URI: https://matthewfries.com/mf-gig-calendar
+Author URI: https://matthewfries.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 3.3
-Tested up to: 5.3
-Stable tag: 1.0.4
+Tested up to: 5.3.2
+Stable tag: 1.1
 
 A simple event calendar created for musicians but useful for anyone. Supports multi-day events, styled text, links, images, and more.
 
 == Description ==
 
-I'm Matthew Fries (that's where the MF in MF Gig Calendar comes from) and I'm a NYC jazz pianist and part-time web developer. I developed this plugin because I wanted a flexible and easy to use performance calendar for [my own music website](http://www.matthewfries.com). In the process I tried to create something that would work for more than just musicians. I've added a few features since it started:
+I'm Matthew Fries (that's where the MF in MF Gig Calendar comes from) and I'm a NYC jazz pianist and part-time web developer. I developed this plugin because I wanted a flexible and easy to use performance calendar for [my own music website](https://matthewfries.com). In the process I tried to create something that would work for more than just musicians. I've added a few features since it started:
 
 = Current Features =
 * beginning and end dates for multiple-day events
@@ -34,7 +34,7 @@ Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG 
 
 Want to keep in touch? Here are a few options...
 
-* [www.matthewfries.com](http://www.matthewfries.com)
+* [www.matthewfries.com](https://matthewfries.com)
 * [facebook](http://www.facebook.com/matthewfriesmusic)
 * [twitter](http://www.twitter.com/mfjazz)
 
@@ -92,6 +92,11 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Changelog ==
 
+
+**Version 1.1**
+* Another attempt to fix the bug causing dates to be off by one day in certain hosting environments.
+* Changes to the Archives year list
+* Added ability to limit the number of years listed in the Archive submenu
 
 **Version 1.0.4**
 
@@ -233,4 +238,4 @@ I tried to keep the basics of this plugin pretty simple so that it would be usef
 
 == Upgrade Notice == 
 
-Version 1.0.4 fixes an issue with dates being off by a day! Also updates to be compatible with PHP 7.
+Version 1.1 tries again to fix an issue with dates being off by a day on certain hosting environments, plus a few other small cleanups.

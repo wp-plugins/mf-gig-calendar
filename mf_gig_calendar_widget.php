@@ -63,23 +63,14 @@ class GigCalendarWidget extends WP_Widget {
 				foreach ($mfgigcal_events as $mfgigcal_event) {
 					echo "\n<li>";
 					
-					$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
-					$start_date = strtotime($mfgigcal_event->start_date) + $offset;
-					$end_date = strtotime($mfgigcal_event->end_date) + $offset;
-					
-					/*
-					$startArray = explode("-", $mfgigcal_event->start_date);
-					$start_date = mktime(0,0,0,$startArray[1],$startArray[2],$startArray[0]);
-					
-					$endArray = explode("-", $mfgigcal_event->end_date);
-					$end_date = mktime(0,0,0,$endArray[1],$endArray[2],$endArray[0]);
-					*/
+					$start_date = strtotime($mfgigcal_event->start_date);
+					$end_date = strtotime($mfgigcal_event->end_date);
 					
 					if ($start_date == $end_date) { // single date format
-						echo "<div class=\"date\">" . date_i18n($widget_date_format, $start_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
+						echo "<div class=\"date\">" . wp_date($widget_date_format, $start_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
 					}
 					else { // multi-day format
-						echo "<div class=\"date\">" . date_i18n($widget_date_format, $start_date) . "&ndash;" . date_i18n($widget_date_format, $end_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
+						echo "<div class=\"date\">" . wp_date($widget_date_format, $start_date) . "&ndash;" . wp_date($widget_date_format, $end_date) . " <span class=\"time\">$mfgigcal_event->time</span></div>";
 					}
 					
 					if ($mfgigcal_settings['calendar_url']) {
