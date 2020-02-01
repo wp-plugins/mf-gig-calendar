@@ -30,7 +30,7 @@ The calendar can be placed in any **PAGE** or **POST** on your Wordpress site - 
 
 `[mfgigcal]`
 
-Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 4.1.
+Requires WordPress 3.3 or newer because of the changes to the Wordpress WYSIWYG editor. Personally tested up to 5.2.3.
 
 Want to keep in touch? Here are a few options...
 
