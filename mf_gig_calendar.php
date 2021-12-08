@@ -296,7 +296,7 @@ function mfgigcal_admin_register_head() {
 	wp_enqueue_style( 'mfgigcal-css', plugins_url( '/css/mf_gig_calendar_admin.css', __FILE__ ) );
 
 	// add mfgigcal js
-	wp_enqueue_script( 'mfgigcal-admin', $siteurl . '/wp-content/plugins/' . basename( dirname( __FILE__ ) ) . '/mf_gig_calendar_admin.js', array( 'jquery-ui-datepicker' ) );
+	wp_enqueue_script( 'mfgigcal-admin', '/wp-content/plugins/' . basename( dirname( __FILE__ ) ) . '/mf_gig_calendar_admin.js', array( 'jquery-ui-datepicker' ) );
 
 	// localize our js for datepicker
 	$aryArgs = array(
@@ -1004,11 +1004,11 @@ function mfgigcal_admin_FormatDate( $start_date, $end_date ) {
 	$endArray   = explode( "-", $end_date );
 	$end_date   = strtotime( $end_date );
 
-	$mfgigcal_date;
+	$mfgigcal_date = "";
 
 	if ( $start_date == $end_date ) {
 		if ( $startArray[2] == "00" ) {
-			$start_date    = mktime( 0, 0, 0, $startArray[1], 15, $startArray[0] ) + $offset;
+			$start_date    = mktime( 0, 0, 0, $startArray[1], 15, $startArray[0] );
 			$mfgigcal_date .= '<span style="white-space:nowrap;">' . wp_date( "F, Y", $start_date ) . "</span>";
 
 			return $mfgigcal_date;
@@ -1195,7 +1195,7 @@ function mfgigcal_admin_PrintTruncated( $maxLength, $input_html ) {
 	$position      = 0;
 	$tags          = array();
 
-	$mfgigcal_html;
+	$mfgigcal_html = "";
 	$input_html = strip_tags( $input_html, "<img><b><i><br><br />" );
 
 	while ( $printedLength < $maxLength && preg_match( '{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;}', $input_html, $match, PREG_OFFSET_CAPTURE, $position ) ) {
