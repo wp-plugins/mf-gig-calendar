@@ -153,13 +153,8 @@ function mfgigcal_getrows( $atts ) {
 			$query_prefix = get_permalink( get_post( $post )->id ) . "?";
 		}
 	} else {
-		$existing = "?";
-		foreach ( $_GET as $k => $v ) {
-			if ( $k != "ytd" && $k != "event_id" ) {
-				$existing .= $k . "=" . $v . "&";
-			}
-		}
-		$query_prefix = $existing;
+		global $post;
+		$query_prefix = get_permalink( get_post( $post )->id ) . "&";
 	}
 
 	if ( empty( $atts ) ) { // don't show the nav if we're working with shortcode display
@@ -755,13 +750,16 @@ function mfgigcal_admin() {
 
 function mfgigcal_delete_event() {
 	global $wpdb;
+
+    $id = $_GET['id'];
+
 	$mfgigcal_table = $wpdb->prefix . "mfgigcal";
-	$wpdb->query(
+	$wpdb->query($wpdb->prepare(
 		"
 		DELETE FROM $mfgigcal_table 
-		WHERE id = '" . $_GET['id'] . "'
-		"
-	);
+		WHERE id = %d
+		", $id
+	));
 }
 
 function mfgigcal_save_record() {
@@ -833,12 +831,14 @@ function mfgigcal_edit_event() {
 	global $wpdb;
 	$mfgigcal_table = $wpdb->prefix . "mfgigcal";
 
+	$id = $_GET['id'];
+
 	$sql = "SELECT *
 			FROM $mfgigcal_table
-			WHERE id = '" . $_GET['id'] . "'
+			WHERE id = %d
 			LIMIT 1";
 
-	$mfgigcal_event = $wpdb->get_row( $sql );
+	$mfgigcal_event = $wpdb->get_row( $wpdb->prepare($sql, $id) );
 
 	$ytd = mfgigcal_Clean( $_GET['ytd'] );
 
@@ -859,7 +859,7 @@ function mfgigcal_edit_event() {
 
 	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
 	if ( $_GET['action'] == "edit" ) {
-		echo '<input type="hidden" name="id" value="' . $_GET['id'] . '">';
+		echo '<input type="hidden" name="id" value="' . esc_attr($id) . '">';
 	}
 	echo "
 		<input type=\"hidden\" name=\"ytd\" value=\"$ytd\">
@@ -1128,13 +1128,8 @@ function mfgigcal_CalendarNav( $show_title = true ) {
 		global $post;
 		$query_prefix = get_permalink( get_post( $post )->id ) . "?";
 	} else {
-		$existing = "?";
-		foreach ( $_GET as $k => $v ) {
-			if ( $k != "ytd" && $k != "event_id" ) {
-				$existing .= $k . "=" . $v . "&";
-			}
-		}
-		$query_prefix = $existing;
+		global $post;
+		$query_prefix = get_permalink( get_post( $post )->id ) . "&";
 	}
 
 	( $query_prefix == get_permalink( get_post( $post )->id ) . "?" ) ? $reset_link = get_permalink( get_post( $post )->id ) : $reset_link = $query_prefix;
@@ -1175,6 +1170,7 @@ function mfgigcal_CalendarNav( $show_title = true ) {
 		$years_to_display = min( $years_to_display, $mfgigcal_settings['archive_limit'] );
 	}
 	$y = $archive_start;
+
 	for ( $i = 1; $i <= $years_to_display; $i ++ ) {
 		( $y == $ytd ) ? $mfgigcal_nav .= '<strong>' . $y . '</strong> ' : $mfgigcal_nav .= '<a href="' . $query_prefix . 'ytd=' . $y . '">' . $y . '</a> ';
 		$y --;
