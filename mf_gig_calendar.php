@@ -145,22 +145,17 @@ function mfgigcal_getrows( $atts ) {
 		$mfgigcal_data .= "<a href=\"$feed_link\" class=\"rss-link\">RSS</a>";
 	}
 
+	global $post;
+	$query_prefix = get_permalink( get_post( $post )->id );
 	if ( get_option( 'permalink_structure' ) ) {
 		if ( $mfgigcal_settings['calendar_url'] ) {
-			$query_prefix = $mfgigcal_settings['calendar_url'] . "?";
-		} else {
-			global $post;
-			$query_prefix = get_permalink( get_post( $post )->id ) . "?";
+			$query_prefix = $mfgigcal_settings['calendar_url'];
 		}
-	} else {
-		global $post;
-		$query_prefix = get_permalink( get_post( $post )->id ) . "&";
 	}
 
 	if ( empty( $atts ) ) { // don't show the nav if we're working with shortcode display
 		$mfgigcal_data .= mfgigcal_CalendarNav();
 	}
-
 
 	if ( empty( $mfgigcal_events ) && $mfgigcal_settings['no-events'] == "text" ) {
 		$mfgigcal_data .= "<p>" . $mfgigcal_settings['message'] . "</p>";
@@ -186,7 +181,9 @@ function mfgigcal_getrows( $atts ) {
 
 	$mfgigcal_data .= "\n\n<ul id=\"cal\" class=\"mfgigcal " . $list_type . "\">\n";
 
+
 	foreach ( $mfgigcal_events as $mfgigcal_event ) {
+		$url = add_query_arg( "event_id", $mfgigcal_event->id, $query_prefix );
 
 		$mfgigcal_data .= "\n<li class=\"event\">\n<div class=\"date\">\n\t";
 		$mfgigcal_data .= mfgigcal_FormatDate( $mfgigcal_event->start_date, $mfgigcal_event->end_date );
@@ -194,7 +191,7 @@ function mfgigcal_getrows( $atts ) {
 
 		$mfgigcal_data .= "<div class=\"info_block\">\n\t<h3>";
 		if ( ! $id && $link ) {
-			$mfgigcal_data .= "<a href=\"" . $query_prefix . "event_id=$mfgigcal_event->id\">" . $mfgigcal_event->title . "</a>";
+			$mfgigcal_data .= "<a href=\"" . esc_attr__( $url ) . "\">" . $mfgigcal_event->title . "</a>";
 		} else {
 			$mfgigcal_data .= $mfgigcal_event->title;
 		}
@@ -751,15 +748,15 @@ function mfgigcal_admin() {
 function mfgigcal_delete_event() {
 	global $wpdb;
 
-    $id = $_GET['id'];
+	$id = $_GET['id'];
 
 	$mfgigcal_table = $wpdb->prefix . "mfgigcal";
-	$wpdb->query($wpdb->prepare(
+	$wpdb->query( $wpdb->prepare(
 		"
 		DELETE FROM $mfgigcal_table 
 		WHERE id = %d
 		", $id
-	));
+	) );
 }
 
 function mfgigcal_save_record() {
@@ -838,7 +835,7 @@ function mfgigcal_edit_event() {
 			WHERE id = %d
 			LIMIT 1";
 
-	$mfgigcal_event = $wpdb->get_row( $wpdb->prepare($sql, $id) );
+	$mfgigcal_event = $wpdb->get_row( $wpdb->prepare( $sql, $id ) );
 
 	$ytd = mfgigcal_Clean( $_GET['ytd'] );
 
@@ -859,7 +856,7 @@ function mfgigcal_edit_event() {
 
 	echo "<form id=\"edit_event_form\" method=\"POST\" action=\"?page=mf_gig_calendar\">";
 	if ( $_GET['action'] == "edit" ) {
-		echo '<input type="hidden" name="id" value="' . esc_attr($id) . '">';
+		echo '<input type="hidden" name="id" value="' . esc_attr( $id ) . '">';
 	}
 	echo "
 		<input type=\"hidden\" name=\"ytd\" value=\"$ytd\">
@@ -1192,7 +1189,7 @@ function mfgigcal_admin_PrintTruncated( $maxLength, $input_html ) {
 	$tags          = array();
 
 	$mfgigcal_html = "";
-	$input_html = strip_tags( $input_html, "<img><b><i><br><br />" );
+	$input_html    = strip_tags( $input_html, "<img><b><i><br><br />" );
 
 	while ( $printedLength < $maxLength && preg_match( '{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;}', $input_html, $match, PREG_OFFSET_CAPTURE, $position ) ) {
 		list( $tag, $tagPosition ) = $match[0];
