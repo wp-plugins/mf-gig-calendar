@@ -191,7 +191,7 @@ function mfgigcal_getrows( $atts ) {
 
 		$mfgigcal_data .= "<div class=\"info_block\">\n\t<h3>";
 		if ( ! $id && $link ) {
-			$mfgigcal_data .= "<a href=\"" . esc_attr__( $url ) . "\">" . $mfgigcal_event->title . "</a>";
+			$mfgigcal_data .= "<a href=\"" . esc_attr( $url ) . "\">" . $mfgigcal_event->title . "</a>";
 		} else {
 			$mfgigcal_data .= $mfgigcal_event->title;
 		}
